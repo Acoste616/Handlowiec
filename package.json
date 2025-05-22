@@ -1,7 +1,5 @@
 {
-  "name": "handlowiec-mvp",
-  "version": "1.0.0",
-  "description": "MVP Landing Page for Handlowiec.pl - B2B Sales Outsourcing",
+    "name": "bezhandlowca-mvp",  "version": "1.0.0",  "description": "Landing Page for BezHandlowca.pl - B2B Sales Process Takeover",
   "main": "index.js",
   "scripts": {
     "dev": "next dev",
@@ -67,7 +65,7 @@
     "nextjs",
     "poland"
   ],
-  "author": "Handlowiec.pl",
+  "author": "BezHandlowca.pl",
   "license": "MIT",
   "engines": {
     "node": ">=18.0.0",

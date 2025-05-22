@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { googleSheetsService } from '@/services/google-sheets';
+import { googleSheetsService } from '@/services/googleSheets';
 import { hubspotService } from '@/services/hubspot';
 import { emailService } from '@/services/email';
 import { slackService } from '@/services/slack';

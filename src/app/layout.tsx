@@ -20,14 +20,7 @@ const poppins = Poppins({
   display: 'swap',
 });
 
-const organizationSchema = {
-  "@context": "https://schema.org",
-  "@type": "Organization",
-  "name": "Handlowiec Sp. z o.o.",
-  "alternateName": "Handlowiec.pl",
-  "url": config.app.url,
-  "logo": `${config.app.url}/logo.svg`,
-  "description": "Profesjonalny outsourcing sprzedaży B2B dla polskich MŚP",
+const organizationSchema = {  "@context": "https://schema.org",  "@type": "Organization",  "name": "BezHandlowca Sp. z o.o.",  "alternateName": "BezHandlowca.pl",  "url": config.app.url,  "logo": `${config.app.url}/logo.svg`,  "description": "Sprzedaż B2B bez handlowca - przejmujemy cały proces sprzedaży za Ciebie",
   "address": {
     "@type": "PostalAddress",
     "streetAddress": "ul. Przykładowa 123",
@@ -63,42 +56,13 @@ const serviceSchema = {
   "description": "Profesjonalny outsourcing sprzedaży B2B dla polskich MŚP. Lead generation, pipeline management, coaching handlowców.",
   "provider": {
     "@type": "Organization",
-    "name": "Handlowiec Sp. z o.o."
-  },
-  "areaServed": {
-    "@type": "Country",
-    "name": "Poland"
-  },
-  "category": "Business Consulting",
-  "offers": {
-    "@type": "Offer",
-    "description": "Konsultacja outsourcingu sprzedaży",
-    "url": config.app.url
-  }
+        "name": "BezHandlowca Sp. z o.o."  },  "areaServed": {    "@type": "Country",    "name": "Poland"  },  "category": "Business Consulting",  "offers": {    "@type": "Offer",    "description": "Sprzedaż B2B bez handlowca - bezpłatna konsultacja",    "url": config.app.url  }
 };
 
 export const metadata: Metadata = {
   metadataBase: new URL(config.app.url),
-  title: {
-    default: 'Handlowiec.pl - Profesjonalny Outsourcing Sprzedaży B2B',
-    template: '%s | Handlowiec.pl',
-  },
-  description: 'Zatrzymaj rotację handlowców i zamknij więcej kontraktów bez etatów. Profesjonalny outsourcing sprzedaży B2B dla polskich MŚP. Wypełniamy lejek jakościowymi leadami.',
-  keywords: [
-    'outsourcing sprzedaży',
-    'B2B',
-    'lead generation',
-    'handlowcy',
-    'sprzedaż',
-    'MŚP',
-    'Polska',
-    'CRM',
-    'sales',
-    'pipeline',
-  ],
-  authors: [{ name: 'Handlowiec.pl' }],
-  creator: 'Handlowiec.pl',
-  publisher: 'Handlowiec Sp. z o.o.',
+    title: {    default: 'BezHandlowca.pl - Sprzedaż B2B bez handlowca',    template: '%s | BezHandlowca.pl',  },  description: 'Zatrudniasz – szkolisz – tracisz? Zamknij drzwi obrotowe w sprzedaży. Przejmujemy cały proces sprzedaży B2B za Ciebie. Płacisz tylko za efekty. Zero kosztów stałych.',
+    keywords: [    'sprzedaż bez handlowca',    'outsourcing sprzedaży',    'B2B',    'lead generation',    'rotacja handlowców',    'sprzedaż',    'MŚP',    'Polska',    'CRM',    'sales',    'pipeline',    'koszt handlowca',  ],  authors: [{ name: 'BezHandlowca.pl' }],  creator: 'BezHandlowca.pl',  publisher: 'BezHandlowca Sp. z o.o.',
   category: 'Business Services',
   classification: 'Sales Outsourcing',
   
@@ -107,15 +71,13 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'pl_PL',
     url: config.app.url,
-    title: 'Handlowiec.pl - Profesjonalny Outsourcing Sprzedaży B2B',
-    description: 'Zatrzymaj rotację handlowców i zamknij więcej kontraktów bez etatów. Profesjonalny outsourcing sprzedaży B2B dla polskich MŚP.',
-    siteName: 'Handlowiec.pl',
+        title: 'BezHandlowca.pl - Sprzedaż B2B bez handlowca',    description: 'Zatrudniasz – szkolisz – tracisz? Zamknij drzwi obrotowe w sprzedaży. Przejmujemy cały proces sprzedaży B2B za Ciebie.',    siteName: 'BezHandlowca.pl',
     images: [
       {
         url: '/images/og-image.jpg',
         width: 1200,
         height: 630,
-        alt: 'Handlowiec.pl - Outsourcing Sprzedaży B2B',
+        alt: 'BezHandlowca.pl - Sprzedaż B2B bez handlowca',
       },
     ],
   },
@@ -123,8 +85,7 @@ export const metadata: Metadata = {
   // Twitter
   twitter: {
     card: 'summary_large_image',
-    title: 'Handlowiec.pl - Profesjonalny Outsourcing Sprzedaży B2B',
-    description: 'Zatrzymaj rotację handlowców i zamknij więcej kontraktów bez etatów.',
+        title: 'BezHandlowca.pl - Sprzedaż B2B bez handlowca',    description: 'Zatrudniasz – szkolisz – tracisz? Zamknij drzwi obrotowe w sprzedaży.',
     images: ['/images/og-image.jpg'],
     creator: '@handlowiec_pl',
   },

@@ -246,7 +246,7 @@ export class GoogleSheetsService {
       let leadsThisWeek = 0;
       let leadsThisMonth = 0;
 
-      timestamps.forEach((timestamp) => {
+      timestamps.forEach((timestamp: any) => {
         if (!timestamp) return;
         
         const leadDate = new Date(timestamp);

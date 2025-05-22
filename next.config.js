@@ -3,7 +3,7 @@ const { withSentryConfig } = require('@sentry/nextjs');
 
 const nextConfig = {
   experimental: {
-    appDir: true,
+    // appDir is now stable in Next.js 14
   },
   images: {
     domains: ['res.cloudinary.com'],
@@ -67,6 +67,4 @@ const sentryWebpackPluginOptions = {
   project: 'handlowiec-mvp',
 };
 
-module.exports = process.env.NODE_ENV === 'production' 
-  ? withSentryConfig(nextConfig, sentryWebpackPluginOptions)
-  : nextConfig; 
+module.exports = nextConfig; 

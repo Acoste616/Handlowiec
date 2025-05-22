@@ -1,15 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { leadFormSchema } from '@/lib/validations';
 import { googleSheetsService } from '@/services/googleSheets';
 import { hubspotService } from '@/services/hubspot';
 import { emailService } from '@/services/email';
 import { slackService } from '@/services/slack';
-import { createRateLimiter, extractUTMParams, generateTrackingId, sanitizeString } from '@/utils';
-import { config } from '@/config';
+import { config } from '@/lib/config';
+import { leadFormSchema } from '@/lib/validations';
+import { sanitizeString, generateTrackingId, extractUTMParams, createRateLimiter } from '@/utils';
 import type { ApiResponse } from '@/types/api';
 import type { LeadFormData } from '@/types/form';
 
-// Rate limiter: max 5 submissions per 15 minutes per IP
+// Rate limiter instance
 const rateLimiter = createRateLimiter(
   config.security.rateLimit.max,
   config.security.rateLimit.windowMs
@@ -22,12 +22,12 @@ export async function POST(request: NextRequest): Promise<NextResponse<ApiRespon
   const startTime = Date.now();
   const trackingId = generateTrackingId();
   
+  // Get client IP for rate limiting
+  const clientIp = request.headers.get('x-forwarded-for') || 
+                   request.headers.get('x-real-ip') || 
+                   'unknown';
+  
   try {
-    // Get client IP for rate limiting
-    const clientIp = request.headers.get('x-forwarded-for') || 
-                     request.headers.get('x-real-ip') || 
-                     'unknown';
-
     // Check rate limit
     const rateLimitResult = rateLimiter.check(clientIp);
     if (!rateLimitResult.allowed) {
@@ -130,7 +130,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<ApiRespon
     const [sheetsResult, ...otherResults] = await Promise.all(integrationPromises);
 
     // Check if primary integration (Google Sheets) succeeded
-    if (!sheetsResult.success) {
+    if (!sheetsResult || !sheetsResult.success) {
       throw new Error('Failed to save lead to primary storage');
     }
 
@@ -149,7 +149,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<ApiRespon
         message: 'Dziękujemy! Twoje zgłoszenie zostało wysłane. Skontaktujemy się w ciągu 15 minut.',
         data: {
           trackingId,
-          leadId: sheetsResult.rowId,
+          leadId: (sheetsResult && 'rowId' in sheetsResult) ? sheetsResult.rowId : null,
         },
         timestamp: new Date().toISOString(),
       },
@@ -197,7 +197,7 @@ export async function OPTIONS(): Promise<NextResponse> {
     {
       status: 200,
       headers: {
-        'Access-Control-Allow-Origin': config.isDevelopment ? '*' : config.app.url,
+        'Access-Control-Allow-Origin': config.app.isDevelopment ? '*' : config.app.url,
         'Access-Control-Allow-Methods': 'POST, OPTIONS',
         'Access-Control-Allow-Headers': 'Content-Type, X-Requested-With',
         'Access-Control-Max-Age': '86400',
