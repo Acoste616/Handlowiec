@@ -4,10 +4,12 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { LeadFormData, leadFormSchema } from '@/lib/validations';
+import { CONTENT } from '@/constants';
 
 export function ContactForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const { form } = CONTENT;
 
   const {
     register,
@@ -49,10 +51,10 @@ export function ContactForm() {
       <div className="max-w-3xl mx-auto">
         <div className="text-center mb-12">
           <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
-            Umów bezpłatną konsultację
+            {form.title}
           </h2>
           <p className="text-xl text-gray-600">
-            Wypełnij formularz, a my skontaktujemy się z Tobą w ciągu 24 godzin
+            {form.subtitle}
           </p>
         </div>
 
@@ -60,7 +62,7 @@ export function ContactForm() {
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
             <div>
               <label htmlFor="firstName" className="block text-sm font-medium text-gray-700">
-                Imię i nazwisko *
+                {form.fields.firstName} *
               </label>
               <input
                 type="text"
@@ -75,7 +77,7 @@ export function ContactForm() {
 
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                Email *
+                {form.fields.email} *
               </label>
               <input
                 type="email"
@@ -92,7 +94,7 @@ export function ContactForm() {
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
             <div>
               <label htmlFor="phone" className="block text-sm font-medium text-gray-700">
-                Telefon *
+                {form.fields.phone} *
               </label>
               <input
                 type="tel"
@@ -107,7 +109,7 @@ export function ContactForm() {
 
             <div>
               <label htmlFor="company" className="block text-sm font-medium text-gray-700">
-                Nazwa firmy *
+                {form.fields.company} *
               </label>
               <input
                 type="text"
@@ -123,7 +125,7 @@ export function ContactForm() {
 
           <div>
             <label htmlFor="message" className="block text-sm font-medium text-gray-700">
-              Wiadomość *
+              {form.fields.message} *
             </label>
             <textarea
               id="message"
@@ -147,7 +149,7 @@ export function ContactForm() {
             </div>
             <div className="ml-3 text-sm">
               <label htmlFor="consent" className="font-medium text-gray-700">
-                Akceptuję regulamin i politykę prywatności *
+                {form.consent} *
               </label>
               {errors.consent && (
                 <p className="mt-1 text-sm text-red-600">{errors.consent.message}</p>
@@ -161,7 +163,7 @@ export function ContactForm() {
               disabled={isSubmitting}
               className="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isSubmitting ? 'Wysyłanie...' : 'Wyślij wiadomość'}
+              {isSubmitting ? 'Wysyłanie...' : form.submit}
             </button>
           </div>
 
@@ -183,7 +185,7 @@ export function ContactForm() {
                 </div>
                 <div className="ml-3">
                   <p className="text-sm font-medium text-green-800">
-                    Dziękujemy za wiadomość! Skontaktujemy się z Tobą najszybciej jak to możliwe.
+                    {form.success}
                   </p>
                 </div>
               </div>

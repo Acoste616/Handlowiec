@@ -1,115 +1,140 @@
-// Polish language content based on the PRD requirements
+// Polish language content based on the updated value proposition
 export const CONTENT = {
   hero: {
-    headline: "Zatrudniasz – szkolisz – tracisz?",
-    subheadline: "Zatrzymaj rotację i zamknij więcej kontraktów bez etatów.",
-    description: "Profesjonalny outsourcing sprzedaży B2B dla polskich MŚP. Wypełniamy Twój lejek jakościowymi leadami i budujemy przewidywalną sprzedaż.",
-    cta: "Umów 15-minutową rozmowę",
-    ctaSecondary: "Zobacz jak to działa",
+    headline: "Oddaj nam swój dział sprzedaży",
+    subheadline: "i śpij spokojnie",
+    description: "Przejmujemy kompletny proces sprzedaży - od pierwszego kontaktu do podpisania umowy. Działamy pod Twoją marką z najwyższymi standardami.",
+    cta: "Oddaj nam swoją sprzedaż",
+    ctaSecondary: "Zobacz case study",
   },
   
   benefits: [
     {
-      title: "Lejek pełen jakościowych leadów",
-      description: "Koniec \"pustych list\" od agencji. Otrzymujesz weryfikowane kontakty do firm z Twojego ICP.",
+      title: "Zero stresu właściciela",
+      description: "Przejmujemy cały dział sprzedaży - prospecting, kwalifikację, prezentacje, negocjacje i closing. Ty tylko podpisujesz umowy.",
       icon: "target",
     },
     {
-      title: "Proces, nie wymówki",
-      description: "KPI w dashboardzie, standardy follow-up, przejrzysty pipeline sprzedażowy.",
+      title: "Twoja firma, nasz profesjonalizm",
+      description: "Klienci myślą, że rozmawiają z Twoim zespołem. Chronimy i budujemy Twoją reputację jak własną.",
+      icon: "award",
+    },
+    {
+      title: "Najwyższe standardy obsługi",
+      description: "Każdy kontakt z klientem na poziomie premium. Bez spalonych leadów, bez złego wrażenia.",
+      icon: "star",
+    },
+    {
+      title: "Pełny lejek sprzedażowy",
+      description: "Od cold outreach do after-sales. Każdy etap pod kontrolą z raportowaniem w czasie rzeczywistym.",
       icon: "chart",
     },
     {
-      title: "Zero kosztów ZUS & PPK",
-      description: "Płacisz tylko za wyniki. Brak stałych kosztów etatowego handlowca.",
+      title: "Rośnij bez limitów",
+      description: "Zwiększamy intensywność bez dodawania etatów. Więcej klientów bez problemów kadrowych.",
+      icon: "trending-up",
+    },
+    {
+      title: "Płacisz za wyniki",
+      description: "Zarabiamy, gdy Ty zarabiasz. Pełne wyrównanie interesów i motywacja do maksymalnych rezultatów.",
       icon: "money",
     },
   ],
   
   socialProof: {
     title: "Zaufali nam przedsiębiorcy z całej Polski",
-    testimonial: "W 90 dni wypełniliśmy lejek spółki SaaS 123 leadami ICP, co dało 7 nowych kontraktów – 0 rotacji handlowców.",
-    author: "Przykładowy klient",
+    testimonial: "W 90 dni przejęli nasz cały proces sprzedaży. Rezultat? 7 nowych kontraktów miesięcznie i spokój, że każdy klient jest obsługiwany na najwyższym poziomie.",
+    author: "CEO firmy SaaS",
     companies: ["Company 1", "Company 2", "Company 3", "Company 4"],
+    stats: [
+      { value: "87%", label: "klientów odnawia współpracę na kolejny rok" },
+      { value: "14 dni", label: "średni czas do pierwszej transakcji" },
+      { value: "340%", label: "ROI średni zwrot z inwestycji klientów" },
+      { value: "95%", label: "satysfakcji klientów końcowych (NPS)" },
+    ],
   },
   
   process: {
-    title: "Jak to działa? Proces Sales-Shelter™",
-    description: "Handlowcy sprzedają, bo mają pełny lejek, a Ty śpisz spokojnie.",
+    title: "Jak przejmujemy Twoją sprzedaż?",
+    description: "4-krokowy proces, który przekształca Twój chaos sprzedażowy w przewidywalną maszynę do zarabiania.",
     steps: [
       {
-        title: "Audyt lejka",
-        description: "Analizujemy Twój obecny proces sprzedaży i identyfikujemy wąskie gardła.",
+        title: "Audyt i strategia (tydzień 1)",
+        description: "Analizujemy Twój product-market fit, budujemy ICP i buyer personas, tworzymy sales playbook pod Twoją markę.",
       },
       {
-        title: "System leadów \"pod klucz\"",
-        description: "Budujemy dedykowane listy prospects i sekwencje outreach.",
+        title: "Onboarding zespołu (tydzień 2)",
+        description: "Szkolenie z Twoich produktów/usług, poznanie Twojej kultury i wartości, setup narzędzi i procesów.",
       },
       {
-        title: "Coaching handlowców",
-        description: "Cotygodniowe wsparcie Twojego zespołu z playbook follow-upów.",
+        title: "Soft launch (tydzień 3-4)",
+        description: "Pierwsze kontakty pod Twoją marką, A/B test messagingu, optymalizacja scriptów i procesów.",
+      },
+      {
+        title: "Full deployment (miesiąc 2+)",
+        description: "Pełne przejęcie procesu sprzedaży, systematyczne generowanie leadów, regularne optymalizacje i skalowanie.",
       },
     ],
   },
   
   painPoints: [
     {
-      title: "20-30% rotacji = utrata nawet 6 msc. przychodu z jednego etatu",
-      description: "Każda wymiana handlowca kosztuje Cię miesiące budowania relacji od nowa.",
+      title: "Handlowiec to \"czarna skrzynka\"",
+      description: "Nie wiesz co robi przez 8h, raporty nieczytelne, brak kontroli nad procesem. U nas: pełna transparentność - widzisz każdy call, każdy email, każdą aktywność w real-time.",
     },
     {
-      title: "Pusty lejek = stres właściciela",
-      description: "Nie wiesz skąd przyjdą kolejni klienci. Żyjesz w niepewności.",
+      title: "Spaleni leadzy = spalona reputacja",
+      description: "Kiepska obsługa niszczy Twoją markę. Klienci zapamiętują złe doświadczenia. U nas: działamy jak Twój premium zespół. Każdy kontakt buduje Twoją reputację.",
     },
     {
-      title: "Koszt etatu vs wyniki",
-      description: "Płacisz pensję + ZUS + PPK, a kontrakt podpisuje co trzeci miesiąc.",
+      title: "Brak przewidywalności przychodów",
+      description: "Nie wiesz ile sprzedasz w przyszłym miesiącu. Planowanie to nightmare. U nas: przewidywalny pipeline z forecasting. Wiesz ile zarobisz za 60 dni.",
     },
   ],
   
   faq: [
     {
-      question: "Czy przejmiecie moich klientów?",
-      answer: "Nie, działamy tylko na nowych leadach. Twoja baza klientów pozostaje w Twoich rękach.",
+      question: "Czy przejmiecie moich obecnych klientów?",
+      answer: "Nie. Skupiamy się wyłącznie na pozyskiwaniu NOWYCH klientów. Obecni pozostają w Twoich rękach.",
     },
     {
-      question: "Jak szybko zobaczę wyniki?",
-      answer: "Pierwsze kwalifikowane spotkania w ciągu 30 dni od startu współpracy.",
+      question: "Skąd mam pewność, że nie zniszczycie mojej reputacji?",
+      answer: "Każdy nasz consultant przechodzi 3-miesięczne szkolenie. Mamy SLA na jakość obsługi i full monitoring każdego kontaktu.",
     },
     {
-      question: "Ile to kosztuje?",
-      answer: "Setup + success fee. Płacisz, gdy podpisujesz umowę. Bez ukrytych kosztów.",
+      question: "Co jeśli klient zapyta o szczegóły techniczne?",
+      answer: "Mamy hotline do Twojego zespołu technicznego lub przekazujemy lead do Ciebie na tym etapie. Nie blefujemy.",
+    },
+    {
+      question: "Ile to kosztuje miesięcznie?",
+      answer: "Setup fee + % od każdej zamkniętej transakcji. Zero stałych kosztów. Zarabiasz = my zarabiamy.",
     },
     {
       question: "Czy będę mieć kontrolę nad procesem?",
-      answer: "Tak, otrzymasz pełny dostęp do dashboardu z KPI i raportami w czasie rzeczywistym.",
-    },
-    {
-      question: "Jak wyglądają gwarancje?",
-      answer: "Jeśli w pierwszych 60 dniach nie wygenerujemy kwalifikowanych leadów, zwracamy pieniądze.",
+      answer: "Tak, otrzymasz pełny dostęp do dashboardu z KPI i raportami w czasie rzeczywistym. Widzisz każdą aktywność na żywo.",
     },
   ],
   
   cta: {
-    title: "Gotowy na przewidywalną sprzedaż?",
-    subtitle: "Dołącz do przedsiębiorców, którzy postawili na profesjonalny outsourcing.",
-    button: "Umów bezpłatną konsultację",
-    guarantee: "15-minutowa rozmowa bez zobowiązań",
+    title: "Gotowy oddać nam swoją sprzedaż?",
+    subtitle: "Dołącz do przedsiębiorców, którzy śpią spokojnie wiedząc, że ich sprzedaż jest w najlepszych rękach.",
+    button: "Sprawdź czy kwalifikujesz się do programu",
+    guarantee: "Bezpłatna konsultacja bez zobowiązań",
   },
   
   form: {
-    title: "Umów bezpłatną konsultację",
-    subtitle: "Opowiedz o swoim biznesie, a pokażemy jak możemy pomóc",
+    title: "Sprawdź czy kwalifikujesz się do programu",
+    subtitle: "Nie każdy biznes nadaje się do pełnego przejęcia sprzedaży. Sprawdźmy czy pasujecie.",
     fields: {
       firstName: "Imię",
       company: "Nazwa firmy",
       email: "E-mail",
       phone: "Telefon",
-      message: "Opisz swój największy problem ze sprzedażą",
+      message: "Opisz obecny stan Twojej sprzedaży (ile osób, jakie wyniki, główne problemy)",
     },
     consent: "Zgadzam się na przetwarzanie danych osobowych zgodnie z Polityką Prywatności",
-    submit: "Umów rozmowę",
-    success: "Dziękujemy! Skontaktujemy się w ciągu 15 minut.",
+    submit: "Wyślij zgłoszenie",
+    success: "Dziękujemy! Sprawdzimy Twoje zgłoszenie i odezwiemy się w ciągu 24h.",
   },
   
   footer: {

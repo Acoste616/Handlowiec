@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { CONTENT } from '@/constants';
 
 interface FAQItem {
   question: string;
@@ -9,33 +10,7 @@ interface FAQItem {
 
 export function FAQ() {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
-
-  const faqs: FAQItem[] = [
-    {
-      question: "Ile kosztuje outsourcing sprzedaży B2B?",
-      answer: "Koszt zależy od skali projektu i wybranego modelu współpracy. Oferujemy elastyczne modele: prowizyjny, mieszany lub stały. Średni ROI naszych klientów to 1:5, co oznacza, że na każde wydane 1000 zł generujemy 5000 zł przychodu."
-    },
-    {
-      question: "Jak długo trwa wdrożenie?",
-      answer: "Standardowy proces wdrożenia trwa 2-4 tygodnie. W tym czasie dobieramy zespół, przeprowadzamy szkolenia i ustalamy KPI. Pierwsze wyniki widoczne są już po 30-45 dniach."
-    },
-    {
-      question: "Czy mogę zrezygnować z usługi?",
-      answer: "Tak, współpraca może być zakończona z zachowaniem 30-dniowego okresu wypowiedzenia. Nie ma długoterminowych zobowiązań ani ukrytych kosztów."
-    },
-    {
-      question: "Jak wygląda komunikacja i raportowanie?",
-      answer: "Każdy klient ma dedykowanego opiekuna, z którym komunikuje się na co dzień. Raporty są dostarczane tygodniowo i miesięcznie, a spotkania podsumowujące odbywają się co kwartał."
-    },
-    {
-      question: "Czy handlowcy znają moją branżę?",
-      answer: "Tak, dobieramy handlowców z doświadczeniem w Twojej branży. Każdy przechodzi szkolenie z Twoich produktów i procesów, a także regularnie podnosi kwalifikacje."
-    },
-    {
-      question: "Jakie są gwarancje jakości?",
-      answer: "Gwarantujemy jakość leadów i transparentność działań. Każdy lead jest weryfikowany i kwalifikowany. W przypadku braku wyników, modyfikujemy strategię lub zwracamy część opłaty."
-    }
-  ];
+  const { faq } = CONTENT;
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -44,12 +19,12 @@ export function FAQ() {
           Często zadawane pytania
         </h2>
         <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-          Odpowiedzi na najczęstsze pytania o outsourcing sprzedaży B2B
+          Odpowiedzi na najczęstsze pytania o przejęcie procesu sprzedaży
         </p>
       </div>
 
       <div className="max-w-3xl mx-auto">
-        {faqs.map((faq, index) => (
+        {faq.map((faqItem, index) => (
           <div
             key={index}
             className="border-b border-gray-200 last:border-0"
@@ -60,7 +35,7 @@ export function FAQ() {
             >
               <div className="flex items-center justify-between">
                 <h3 className="text-lg font-semibold text-gray-900">
-                  {faq.question}
+                  {faqItem.question}
                 </h3>
                 <span className="ml-6 flex-shrink-0">
                   <svg
@@ -83,7 +58,7 @@ export function FAQ() {
             </button>
             {openIndex === index && (
               <div className="pb-6">
-                <p className="text-gray-600">{faq.answer}</p>
+                <p className="text-gray-600">{faqItem.answer}</p>
               </div>
             )}
           </div>

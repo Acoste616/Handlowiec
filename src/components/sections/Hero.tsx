@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRight, Play, TrendingUp, Users, Target } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
-import { CONTENT } from '@/lib/constants';
+import { CONTENT } from '@/constants';
 
 export function Hero() {
   const [isVisible, setIsVisible] = useState(false);

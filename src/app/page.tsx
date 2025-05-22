@@ -1,14 +1,4 @@
-import { Suspense } from 'react';
-import { Hero } from '@/components/sections/Hero';
-import { Benefits } from '@/components/sections/Benefits';
-import { SocialProof } from '@/components/sections/SocialProof';
-import { Process } from '@/components/sections/Process';
-import { FAQ } from '@/components/sections/FAQ';
-import { ContactForm } from '@/components/sections/ContactForm';
-import { CallToAction } from '@/components/sections/CallToAction';
-import { Footer } from '@/components/layout/Footer';
-import { StickyButton } from '@/components/layout/StickyButton';
-import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
+import { Suspense } from 'react';import { Hero } from '@/components/sections/Hero';import { Benefits } from '@/components/sections/Benefits';import { SocialProof } from '@/components/sections/SocialProof';import { Process } from '@/components/sections/Process';import { PainPoints } from '@/components/sections/PainPoints';import { FAQ } from '@/components/sections/FAQ';import { ContactForm } from '@/components/sections/ContactForm';import { CallToAction } from '@/components/sections/CallToAction';import { Footer } from '@/components/layout/Footer';import { StickyButton } from '@/components/layout/StickyButton';import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 
 export default function HomePage() {
   return (
@@ -33,57 +23,7 @@ export default function HomePage() {
         <Process />
       </section>
 
-      {/* Pain Points Section */}
-      <section id="pain-points" className="py-16 lg:py-24 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
-              Czy to brzmi znajomo?
-            </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Najczęstsze problemy polskich MŚP w sprzedaży B2B
-            </p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {/* Pain Point 1 */}
-            <div className="bg-white p-8 rounded-2xl shadow-soft border border-gray-100">
-              <div className="text-4xl mb-4">😩</div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-4">
-                20-30% rotacji = utrata nawet 6 msc. przychodu z jednego etatu
-              </h3>
-              <p className="text-gray-600">
-                Każda wymiana handlowca kosztuje Cię miesiące budowania relacji od nowa. 
-                Tracisz momentum i klientów odchodzą do konkurencji.
-              </p>
-            </div>
-
-            {/* Pain Point 2 */}
-            <div className="bg-white p-8 rounded-2xl shadow-soft border border-gray-100">
-              <div className="text-4xl mb-4">😰</div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-4">
-                Pusty lejek = stres właściciela
-              </h3>
-              <p className="text-gray-600">
-                Nie wiesz skąd przyjdą kolejni klienci. Żyjesz w niepewności, 
-                planowanie to koszmar, a sen ucieka gdy pipeline świeci pustkami.
-              </p>
-            </div>
-
-            {/* Pain Point 3 */}
-            <div className="bg-white p-8 rounded-2xl shadow-soft border border-gray-100">
-              <div className="text-4xl mb-4">💸</div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-4">
-                Koszt etatu vs wyniki
-              </h3>
-              <p className="text-gray-600">
-                Płacisz pensję + ZUS + PPK + koszty rekrutacji, a kontrakt podpisuje 
-                co trzeci miesiąc. ROI? Wolisz nie liczyć.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
+                  {/* Pain Points Section */}      <section id="pain-points" className="py-16 lg:py-24 bg-gray-50">        <PainPoints />      </section>
 
       {/* FAQ Section */}
       <section id="faq" className="py-16 lg:py-24 bg-white">
