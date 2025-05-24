@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { scrollToContact } from '@/lib/scroll';
 
 const navItems = [
   { label: 'Rotacja', href: '#rotacja' },
@@ -69,7 +70,10 @@ export default function StickyNavigation() {
             ))}
           </div>
 
-          <button className="bg-secondary-500 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-secondary-600 transition-colors">
+          <button 
+            onClick={scrollToContact}
+            className="bg-secondary-500 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-secondary-600 transition-colors"
+          >
             Kontakt
           </button>
                 </div>      </div>    </div>

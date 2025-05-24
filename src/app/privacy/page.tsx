@@ -2,8 +2,8 @@ import { Metadata } from 'next';
 import Link from 'next/link';
 
 export const metadata: Metadata = {
-  title: 'Polityka Prywatności | Handlowiec.pl',
-  description: 'Polityka prywatności Handlowiec.pl - informacje o przetwarzaniu danych osobowych zgodnie z RODO.',
+  title: 'Polityka Prywatności | BezHandlowca.pl',
+  description: 'Polityka prywatności BezHandlowca.pl - informacje o przetwarzaniu danych osobowych zgodnie z RODO.',
   robots: { index: true, follow: true },
 };
 
@@ -32,14 +32,14 @@ export default function PrivacyPage() {
             </h2>
             <div className="bg-gray-50 p-6 rounded-lg">
               <p className="mb-2">
-                <strong>Handlowiec Sp. z o.o.</strong>
+                <strong>BezHandlowca Sp. z o.o.</strong>
               </p>
               <p className="mb-2">
                 ul. Przykładowa 123<br />
                 00-001 Warszawa
               </p>
               <p className="mb-2">
-                Email: <a href="mailto:kontakt@handlowiec.pl" className="text-primary-600">kontakt@handlowiec.pl</a><br />
+                Email: <a href="mailto:kontakt@bezhandlowca.pl" className="text-primary-600">kontakt@bezhandlowca.pl</a><br />
                 Telefon: <a href="tel:+48123456789" className="text-primary-600">+48 123 456 789</a>
               </p>
             </div>
@@ -209,7 +209,7 @@ export default function PrivacyPage() {
               </p>
               <div className="space-y-2">
                 <p>
-                  📧 Email: <a href="mailto:privacy@handlowiec.pl" className="text-primary-600 font-medium">privacy@handlowiec.pl</a>
+                  📧 Email: <a href="mailto:privacy@bezhandlowca.pl" className="text-primary-600 font-medium">privacy@bezhandlowca.pl</a>
                 </p>
                 <p>
                   📞 Telefon: <a href="tel:+48123456789" className="text-primary-600 font-medium">+48 123 456 789</a>

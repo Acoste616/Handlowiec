@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "name": "handlowiec-mvp",
+  "name": "bezhandlowca-mvp",
   "regions": ["fra1"],
   "functions": {
     "src/app/api/**/*.ts": {

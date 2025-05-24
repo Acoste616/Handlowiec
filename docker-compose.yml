@@ -7,7 +7,7 @@ services:
       context: .
       dockerfile: Dockerfile
       target: builder
-    container_name: handlowiec-app
+    container_name: bezhandlowca-app
     ports:
       - "3000:3000"
     environment:
@@ -21,26 +21,26 @@ services:
       - /app/.next
     command: npm run dev
     networks:
-      - handlowiec-network
+      - bezhandlowca-network
     restart: unless-stopped
 
   # Redis for caching (optional for MVP but good for production)
   redis:
     image: redis:7-alpine
-    container_name: handlowiec-redis
+    container_name: bezhandlowca-redis
     ports:
       - "6379:6379"
     volumes:
       - redis_data:/data
     networks:
-      - handlowiec-network
+      - bezhandlowca-network
     restart: unless-stopped
     command: redis-server --appendonly yes
 
   # Nginx reverse proxy (for production-like setup)
   nginx:
     image: nginx:alpine
-    container_name: handlowiec-nginx
+    container_name: bezhandlowca-nginx
     ports:
       - "80:80"
       - "443:443"
@@ -50,12 +50,12 @@ services:
     depends_on:
       - app
     networks:
-      - handlowiec-network
+      - bezhandlowca-network
     restart: unless-stopped
 
 volumes:
   redis_data:
 
 networks:
-  handlowiec-network:
+  bezhandlowca-network:
     driver: bridge 

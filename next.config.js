@@ -63,8 +63,8 @@ const nextConfig = {
 
 const sentryWebpackPluginOptions = {
   silent: true,
-  org: 'handlowiec',
-  project: 'handlowiec-mvp',
+  org: 'bezhandlowca',
+  project: 'bezhandlowca-mvp',
 };
 
 module.exports = nextConfig; 

@@ -79,7 +79,7 @@ export const CONTENT = {
   
   painPoints: [
     {
-      title: "Handlowiec to \"czarna skrzynka\"",
+      title: "BezHandlowca to \"czarna skrzynka\"",
       description: "Nie wiesz co robi przez 8h, raporty nieczytelne, brak kontroli nad procesem. U nas: pełna transparentność - widzisz każdy call, każdy email, każdą aktywność w real-time.",
     },
     {
@@ -138,14 +138,14 @@ export const CONTENT = {
   },
   
   footer: {
-    company: "Handlowiec Sp. z o.o.",
+    company: "BezHandlowca Sp. z o.o.",
     address: "ul. Przykładowa 123, 00-001 Warszawa",
     nip: "NIP: 123-456-78-90",
-    email: "kontakt@handlowiec.pl",
+    email: "kontakt@bezhandlowca.pl",
     phone: "+48 123 456 789",
     privacy: "Polityka Prywatności",
     terms: "Regulamin",
-    copyright: "© 2024 Handlowiec. Wszystkie prawa zastrzeżone.",
+    copyright: "© 2024 BezHandlowca. Wszystkie prawa zastrzeżone.",
   },
 };
 

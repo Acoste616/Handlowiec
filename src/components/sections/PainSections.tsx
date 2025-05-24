@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { scrollToContact, scrollToCostCalculator, scrollToFAQ } from '@/lib/scroll';
 
 interface PainSectionProps {
   id: string;
@@ -50,6 +51,22 @@ const PainSection = ({ id, icon, title, description, statistic, roi, ctaText }: 
     return () => observer.disconnect();
   }, [id, statistic.number]);
 
+  const handleCTAClick = (id: string) => {
+    switch (id) {
+      case 'kompetencje':
+      case 'lejek':
+      case 'kontrola':
+      case 'skalowanie':
+        scrollToContact();
+        break;
+      case 'koszty':
+        scrollToCostCalculator();
+        break;
+      default:
+        scrollToContact();
+    }
+  };
+
   return (
     <section id={id} className="py-20 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -68,7 +85,10 @@ const PainSection = ({ id, icon, title, description, statistic, roi, ctaText }: 
               {description}
             </p>
 
-            <button className="bg-secondary-500 text-white px-6 py-3 rounded-lg font-semibold hover:bg-secondary-600 transition-colors">
+            <button 
+              onClick={() => handleCTAClick(id)}
+              className="bg-secondary-500 text-white px-6 py-3 rounded-lg font-semibold hover:bg-secondary-600 transition-colors"
+            >
               {ctaText}
             </button>
           </div>
@@ -118,7 +138,7 @@ export default function PainSections() {
       id: 'lejek',
       icon: '📉',
       title: 'Twój lejek sprzedaży dziura jak sito?',
-      description: 'Leadów jest mało, konwersja słaba, a proces sprzedaży nie istnieje. Każdy handlowiec robi to po swojemu, bez systemu i kontroli.',
+      description: 'Leadów jest mało, konwersja słaba, a proces sprzedaży nie istnieje. Każdy przedstawiciel handlowy robi to po swojemu, bez systemu i kontroli.',
       statistic: {
         number: '3',
         description: 'z 10 polskich firm B2B nie ma udokumentowanego procesu sprzedaży'
@@ -130,7 +150,7 @@ export default function PainSections() {
       id: 'koszty',
       icon: '💸',
       title: 'Koszty rosną, a wyniki nie?',
-      description: 'Pensja, ZUS, PPK, prowizje, szkolenia, narzędzia. Jeden handlowiec to koszt 15 000+ zł miesięcznie, a nie zawsze przynosi zysk.',
+      description: 'Pensja, ZUS, PPK, prowizje, szkolenia, narzędzia. Jeden przedstawiciel handlowy to koszt 15 000+ zł miesięcznie, a nie zawsze przynosi zysk.',
       statistic: {
         number: '180000',
         description: 'zł roczny koszt jednego handlowca (z ZUS i prowizjami)'
@@ -154,7 +174,7 @@ export default function PainSections() {
       id: 'skalowanie',
       icon: '📈',
       title: 'Skalowanie sprzedaży to koszmar?',
-      description: 'Każdy nowy handlowiec to kolejne miesiące rekrutacji, wdrożenia i ryzyka. A co jeśli po roku i tak odejdzie?',
+      description: 'Każdy nowy przedstawiciel handlowy to kolejne miesiące rekrutacji, wdrożenia i ryzyka. A co jeśli po roku i tak odejdzie?',
       statistic: {
         number: '4',
         description: 'miesiące średni czas rekrutacji i wdrożenia handlowca'

@@ -36,7 +36,7 @@ const organizationSchema = {  "@context": "https://schema.org",  "@type": "Organ
     "availableLanguage": "Polish"
   },
   "sameAs": [
-    "https://www.linkedin.com/company/handlowiec-pl"
+    "https://www.linkedin.com/company/bezhandlowca-pl"
   ],
   "founder": {
     "@type": "Person",
@@ -62,7 +62,7 @@ const serviceSchema = {
 export const metadata: Metadata = {
   metadataBase: new URL(config.app.url),
     title: {    default: 'BezHandlowca.pl - Sprzedaż B2B bez handlowca',    template: '%s | BezHandlowca.pl',  },  description: 'Zatrudniasz – szkolisz – tracisz? Zamknij drzwi obrotowe w sprzedaży. Przejmujemy cały proces sprzedaży B2B za Ciebie. Płacisz tylko za efekty. Zero kosztów stałych.',
-    keywords: [    'sprzedaż bez handlowca',    'outsourcing sprzedaży',    'B2B',    'lead generation',    'rotacja handlowców',    'sprzedaż',    'MŚP',    'Polska',    'CRM',    'sales',    'pipeline',    'koszt handlowca',  ],  authors: [{ name: 'BezHandlowca.pl' }],  creator: 'BezHandlowca.pl',  publisher: 'BezHandlowca Sp. z o.o.',
+    keywords: [    'sprzedaż bez handlowca',    'outsourcing sprzedaży',    'B2B',    'lead generation',    'rotacja handlowców',    'sprzedaż',    'MŚP',    'Polska',    'CRM',    'sales',    'pipeline',    'koszt handlowca',  ],  authors: [{ name: 'BezHandlowca.pl' }],  creator: '@bezhandlowca_pl',  publisher: 'BezHandlowca Sp. z o.o.',
   category: 'Business Services',
   classification: 'Sales Outsourcing',
   
@@ -87,7 +87,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
         title: 'BezHandlowca.pl - Sprzedaż B2B bez handlowca',    description: 'Zatrudniasz – szkolisz – tracisz? Zamknij drzwi obrotowe w sprzedaży.',
     images: ['/images/og-image.jpg'],
-    creator: '@handlowiec_pl',
+    creator: '@bezhandlowca_pl',
   },
   
   // SEO

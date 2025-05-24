@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { scrollToContact } from '@/lib/scroll';
 
 interface FAQItem {
   question: string;
@@ -18,8 +19,8 @@ export default function NewFAQ() {
       category: 'security'
     },
     {
-      question: "Ile to kosztuje w porównaniu z etatowym handlowcem?",
-      answer: "Średnio 40-60% mniej niż etatowy handlowiec. Nie płacisz ZUS, PPK, urlopów, zwolnień czy kosztów rekrutacji. Płacisz tylko za wygenerowane leady lub zamknięte kontrakty. Brak ryzyka, brak kosztów stałych.",
+      question: "Ile to kosztuje w porównaniu z etatowym przedstawicielem handlowym?",
+      answer: "Średnio 40-60% mniej niż etatowy przedstawiciel handlowy. Nie płacisz ZUS, PPK, urlopów, zwolnień czy kosztów rekrutacji. Płacisz tylko za wygenerowane leady lub zamknięte kontrakty. Brak ryzyka, brak kosztów stałych.",
       category: 'cost'
     },
     {
@@ -138,7 +139,10 @@ export default function NewFAQ() {
           <p className="text-gray-600 mb-6">
             Umów bezpłatną konsultację - odpowiemy na wszystkie wątpliwości
           </p>
-          <button className="bg-secondary-500 text-white px-8 py-4 rounded-lg font-semibold text-lg hover:bg-secondary-600 transition-all duration-200 transform hover:scale-105">
+          <button 
+            onClick={scrollToContact}
+            className="bg-secondary-500 text-white px-8 py-4 rounded-lg font-semibold text-lg hover:bg-secondary-600 transition-all duration-200 transform hover:scale-105"
+          >
             Umów rozmowę (30 min)
           </button>
         </div>

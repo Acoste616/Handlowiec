@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { scrollToContact } from '@/lib/scroll';
 
 export default function CostCalculator() {
   const [salary, setSalary] = useState(8000);
@@ -46,7 +47,7 @@ export default function CostCalculator() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className={`text-center mb-12 transition-all duration-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
           <h2 className="text-4xl font-bold text-gray-900 mb-4">
-            Ile kosztuje Cię etatowy handlowiec?
+            Ile kosztuje Cię etatowy przedstawiciel handlowy?
           </h2>
           <p className="text-xl text-gray-600">
             Sprawdź rzeczywiste koszty i porównaj z naszą usługą
@@ -168,7 +169,10 @@ export default function CostCalculator() {
                 </div>
               </div>
 
-              <button className="w-full bg-secondary-500 text-white py-4 px-6 rounded-lg font-semibold text-lg hover:bg-secondary-600 transition-all duration-200 transform hover:scale-105">
+              <button 
+                onClick={scrollToContact}
+                className="w-full bg-secondary-500 text-white py-4 px-6 rounded-lg font-semibold text-lg hover:bg-secondary-600 transition-all duration-200 transform hover:scale-105"
+              >
                 Sprawdź ofertę
               </button>
             </div>

@@ -67,14 +67,14 @@ export class SlackService {
     }
 
     return {
-      username: 'Handlowiec Bot',
+      username: 'BezHandlowca Bot',
       icon_emoji: ':fire:',
-      text: '🚨 *NOWY LEAD Z HANDLOWIEC.PL* 🚨',
+      text: '🚨 *NOWY LEAD Z BEZHANDLOWCA.PL* 🚨',
       attachments: [
         {
           color: '#f97316',
           title: `Nowe zgłoszenie od ${formData.company}`,
-          title_link: 'https://handlowiec.pl/admin',
+          title_link: 'https://bezhandlowca.pl/admin',
           fields: [
             {
               title: 'Imię',
@@ -103,8 +103,8 @@ export class SlackService {
             },
             ...utmFields,
           ],
-          footer: 'Handlowiec.pl',
-          footer_icon: 'https://handlowiec.pl/favicon.ico',
+          footer: 'BezHandlowca.pl',
+          footer_icon: 'https://bezhandlowca.pl/favicon.ico',
           ts: Math.floor(Date.now() / 1000),
         },
         {
@@ -126,7 +126,7 @@ export class SlackService {
             {
               type: 'button',
               text: '📊 Dashboard',
-              url: 'https://handlowiec.pl/admin',
+              url: 'https://bezhandlowca.pl/admin',
             },
           ],
         },
@@ -146,7 +146,7 @@ export class SlackService {
 
     try {
       const message = {
-        username: 'Handlowiec Bot',
+        username: 'BezHandlowca Bot',
         icon_emoji: ':chart_with_upwards_trend:',
         text: '📊 *DZIENNY RAPORT LEADÓW*',
         attachments: [
@@ -196,9 +196,9 @@ export class SlackService {
 
     try {
       const message = {
-        username: 'Handlowiec Bot',
+        username: 'BezHandlowca Bot',
         icon_emoji: ':warning:',
-        text: '🚨 *BŁĄD W SYSTEMIE HANDLOWIEC.PL*',
+        text: '🚨 *BŁĄD W SYSTEMIE BEZHANDLOWCA.PL*',
         attachments: [
           {
             color: '#ef4444',
@@ -247,7 +247,7 @@ export class SlackService {
 
     try {
       const message = {
-        username: 'Handlowiec Bot',
+        username: 'BezHandlowca Bot',
         icon_emoji: ':calendar:',
         text: '📈 *TYGODNIOWY RAPORT LEADÓW*',
         attachments: [
@@ -297,7 +297,7 @@ export class SlackService {
 
     try {
       const testMessage = {
-        username: 'Handlowiec Bot',
+        username: 'BezHandlowca Bot',
         icon_emoji: ':white_check_mark:',
         text: '✅ Test połączenia Slack - wszystko działa!',
         attachments: [

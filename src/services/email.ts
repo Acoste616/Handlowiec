@@ -25,14 +25,14 @@ export class EmailService {
    * Send lead notification email to the founder
    */
   async sendLeadNotification(formData: LeadFormData): Promise<void> {
-    const subject = `🚨 Nowy lead z handlowiec.pl - ${formData.company}`;
+    const subject = `🚨 Nowy lead z bezhandlowca.pl - ${formData.company}`;
     
     const html = this.generateLeadNotificationHTML(formData);
     const text = this.generateLeadNotificationText(formData);
 
     try {
       await this.transporter.sendMail({
-        from: `"Handlowiec.pl" <${config.email.from}>`,
+        from: `"BezHandlowca.pl" <${config.email.from}>`,
         to: config.email.from, // Send to the same address as from
         subject,
         html,
@@ -54,14 +54,14 @@ export class EmailService {
    * Send confirmation email to the lead
    */
   async sendLeadConfirmation(formData: LeadFormData): Promise<void> {
-    const subject = 'Dziękujemy za zainteresowanie - Handlowiec.pl';
+    const subject = 'Dziękujemy za zainteresowanie - BezHandlowca.pl';
     
     const html = this.generateConfirmationHTML(formData);
     const text = this.generateConfirmationText(formData);
 
     try {
       await this.transporter.sendMail({
-        from: `"Bartek z Handlowiec.pl" <${config.email.from}>`,
+        from: `"Bartek z BezHandlowca.pl" <${config.email.from}>`,
         to: formData.email,
         subject,
         html,
@@ -91,7 +91,7 @@ export class EmailService {
       <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Nowy lead - Handlowiec.pl</title>
+        <title>Nowy lead - BezHandlowca.pl</title>
         <style>
           body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; }
           .container { max-width: 600px; margin: 0 auto; padding: 20px; }
@@ -111,7 +111,7 @@ export class EmailService {
       <body>
         <div class="container">
           <div class="header">
-            <h1>🚨 Nowy Lead z Handlowiec.pl</h1>
+            <h1>🚨 Nowy Lead z BezHandlowca.pl</h1>
             <p>Data: ${formatTimestamp()}</p>
           </div>
           
@@ -165,7 +165,7 @@ export class EmailService {
               <p>Zalecane kroki w ciągu 15 minut:</p>
               <a href="tel:${formData.phone}" class="btn">📞 Zadzwoń teraz</a>
               <a href="mailto:${formData.email}" class="btn">📧 Wyślij e-mail</a>
-              <a href="https://handlowiec.pl/admin" class="btn">📊 Dashboard</a>
+              <a href="https://bezhandlowca.pl/admin" class="btn">📊 Dashboard</a>
             </div>
           </div>
         </div>
@@ -179,7 +179,7 @@ export class EmailService {
    */
   private generateLeadNotificationText(formData: LeadFormData): string {
     return `
-NOWY LEAD Z HANDLOWIEC.PL
+NOWY LEAD Z BEZHANDLOWCA.PL
 ========================
 
 🚨 PILNE: Oddzwoń w ciągu 15 minut!
@@ -201,10 +201,10 @@ ${formData.utm_campaign ? `KAMPANIA: ${formData.utm_campaign}` : ''}
 DZIAŁANIA:
 1. Zadzwoń: ${formData.phone}
 2. E-mail: ${formData.email}
-3. Dashboard: https://handlowiec.pl/admin
+3. Dashboard: https://bezhandlowca.pl/admin
 
 Powodzenia!
-Team Handlowiec.pl
+Team BezHandlowca.pl
     `.trim();
   }
 
@@ -220,7 +220,7 @@ Team Handlowiec.pl
       <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Dziękujemy za zainteresowanie - Handlowiec.pl</title>
+        <title>Dziękujemy za zainteresowanie - BezHandlowca.pl</title>
         <style>
           body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; }
           .container { max-width: 600px; margin: 0 auto; padding: 20px; }
@@ -242,7 +242,7 @@ Team Handlowiec.pl
           <div class="content">
             <div class="highlight">
               <h2>⏰ Odezwiemy się ${responseTime}</h2>
-              <p>Twoje zgłoszenie zostało przekazane bezpośrednio do Bartka, założyciela Handlowiec.pl. Dzięki temu otrzymasz odpowiedź od osoby, która najlepiej zna nasze możliwości.</p>
+              <p>Twoje zgłoszenie zostało przekazane bezpośrednio do Bartka, założyciela BezHandlowca.pl. Dzięki temu otrzymasz odpowiedź od osoby, która najlepiej zna nasze możliwości.</p>
             </div>
             
             <div class="next-steps">
@@ -277,13 +277,13 @@ Team Handlowiec.pl
             <div class="footer">
               <p>
                 <strong>Bartek Kowalski</strong><br>
-                Założyciel Handlowiec.pl<br>
-                📧 bartek@handlowiec.pl<br>
+                Założyciel BezHandlowca.pl<br>
+                📧 bartek@bezhandlowca.pl<br>
                 📞 +48 123 456 789
               </p>
               
               <p style="margin-top: 20px;">
-                <strong>Handlowiec Sp. z o.o.</strong><br>
+                <strong>BezHandlowca Sp. z o.o.</strong><br>
                 ul. Przykładowa 123, 00-001 Warszawa<br>
                 NIP: 123-456-78-90
               </p>
@@ -304,7 +304,7 @@ Team Handlowiec.pl
     return `
 Dziękujemy ${formData.firstName}!
 
-Twoja wiadomość dotarła do nas bezpiecznie i zostanie przekazana bezpośrednio do Bartka, założyciela Handlowiec.pl.
+Twoja wiadomość dotarła do nas bezpiecznie i zostanie przekazana bezpośrednio do Bartka, założyciela BezHandlowca.pl.
 
 ODEZWIEMY SIĘ: ${responseTime}
 
@@ -327,11 +327,11 @@ W MIĘDZYCZASIE przygotuj się do rozmowy:
 
 ---
 Bartek Kowalski
-Założyciel Handlowiec.pl
-bartek@handlowiec.pl
+Założyciel BezHandlowca.pl
+bartek@bezhandlowca.pl
 +48 123 456 789
 
-Handlowiec Sp. z o.o.
+BezHandlowca Sp. z o.o.
 ul. Przykładowa 123, 00-001 Warszawa
 NIP: 123-456-78-90
     `.trim();

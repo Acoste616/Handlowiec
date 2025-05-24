@@ -1,5 +1,8 @@
+'use client';
+
 import Link from 'next/link';
 import Image from 'next/image';
+import { callPhone, sendEmail } from '@/lib/scroll';
 
 export function Footer() {
   const navigation = {
@@ -13,7 +16,7 @@ export function Footer() {
     social: [
       {
         name: 'LinkedIn',
-        href: 'https://www.linkedin.com/company/handlowiec-pl',
+        href: 'https://www.linkedin.com/company/bezhandlowca-pl',
         icon: (props: any) => (
           <svg fill="currentColor" viewBox="0 0 24 24" {...props}>
             <path
@@ -36,7 +39,7 @@ export function Footer() {
             <Link href="/" className="inline-block">
               <Image
                 src="/logo.svg"
-                alt="Handlowiec.pl"
+                alt="BezHandlowca.pl"
                 width={180}
                 height={40}
                 className="h-8 w-auto"
@@ -76,6 +79,10 @@ export function Footer() {
               <li>
                 <a
                   href="tel:+48123456789"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    callPhone('+48123456789');
+                  }}
                   className="text-base text-gray-300 hover:text-white"
                 >
                   +48 123 456 789
@@ -83,10 +90,14 @@ export function Footer() {
               </li>
               <li>
                 <a
-                  href="mailto:kontakt@handlowiec.pl"
+                  href="mailto:kontakt@bezhandlowca.pl"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    sendEmail('kontakt@bezhandlowca.pl', 'Zapytanie z strony BezHandlowca.pl');
+                  }}
                   className="text-base text-gray-300 hover:text-white"
                 >
-                  kontakt@handlowiec.pl
+                  kontakt@bezhandlowca.pl
                 </a>
               </li>
               <li className="text-base text-gray-300">
@@ -101,7 +112,7 @@ export function Footer() {
         <div className="mt-12 pt-8 border-t border-gray-800">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <p className="text-gray-400 text-sm">
-              © {new Date().getFullYear()} Handlowiec.pl. Wszelkie prawa zastrzeżone.
+              © {new Date().getFullYear()} BezHandlowca.pl. Wszelkie prawa zastrzeżone.
             </p>
             <div className="flex space-x-6 mt-4 md:mt-0">
               {navigation.social.map((item) => (

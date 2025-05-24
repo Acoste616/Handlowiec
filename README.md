@@ -1,4 +1,4 @@
-# 🚀 Handlowiec.pl MVP - Landing Page
+# 🚀 BezHandlowca.pl MVP - Landing Page
 
 ## 📋 Project Overview
 
@@ -29,8 +29,8 @@ Professional B2B sales outsourcing landing page for Polish SME market. Built wit
 
 1. **Clone the repository**
 ```bash
-git clone https://github.com/your-org/handlowiec-mvp.git
-cd handlowiec-mvp
+git clone https://github.com/your-org/bezhandlowca-mvp.git
+cd bezhandlowca-mvp
 ```
 
 2. **Install dependencies**
@@ -140,12 +140,12 @@ vercel --prod
 
 1. **Build image**
 ```bash
-docker build -t handlowiec-mvp .
+docker build -t bezhandlowca-mvp .
 ```
 
 2. **Run container**
 ```bash
-docker run -p 3000:3000 --env-file .env.local handlowiec-mvp
+docker run -p 3000:3000 --env-file .env.local bezhandlowca-mvp
 ```
 
 ### Docker Compose (Development)
@@ -224,7 +224,7 @@ npm run format
 
 ## 📞 Support
 
-- **Email**: tech@handlowiec.pl
+- **Email**: tech@bezhandlowca.pl
 - **Phone**: +48 123 456 789
 - **Issues**: GitHub Issues
 

@@ -74,7 +74,7 @@ export const config: Config = {
     },
   },
   app: {
-    url: process.env.NEXT_PUBLIC_APP_URL || 'https://handlowiec.pl',
+    url: process.env.NEXT_PUBLIC_APP_URL || 'https://bezhandlowca.pl',
     isDevelopment: process.env.NODE_ENV === 'development',
     version: process.env.APP_VERSION || '1.0.0',
     isProduction: process.env.NODE_ENV === 'production',

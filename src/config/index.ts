@@ -1,7 +1,7 @@
 export const config = {
   app: {
-    name: process.env.NEXT_PUBLIC_APP_NAME || 'Handlowiec',
-    url: process.env.NEXT_PUBLIC_APP_URL || 'https://handlowiec.pl',
+    name: process.env.NEXT_PUBLIC_APP_NAME || 'BezHandlowca',
+    url: process.env.NEXT_PUBLIC_APP_URL || 'https://bezhandlowca.pl',
     description: 'Profesjonalny outsourcing sprzedaży B2B dla polskich MŚP',
     version: '1.0.0',
   },
@@ -22,8 +22,8 @@ export const config = {
     port: parseInt(process.env.SMTP_PORT || '587'),
     user: process.env.SMTP_USER || '',
     password: process.env.SMTP_PASSWORD || '',
-    from: process.env.EMAIL_FROM || 'leads@handlowiec.pl',
-    to: process.env.EMAIL_TO || 'leads@handlowiec.pl',
+    from: process.env.EMAIL_FROM || 'leads@bezhandlowca.pl',
+    to: process.env.EMAIL_TO || 'leads@bezhandlowca.pl',
   },
   
   slack: {
