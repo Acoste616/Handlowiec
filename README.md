@@ -275,6 +275,72 @@ npm run build
 - Bounce rate (<40%)
 - Core Web Vitals (all green)
 
+## 🏢 CRM Dashboard dla Pracowników
+
+### Dostęp do Panelu
+Panel CRM jest dostępny pod adresem: `http://localhost:3000/admin/dashboard`
+
+### Autoryzacja
+Dostępne konta testowe:
+- `admin@bezhandlowca.pl` / `bezhandlowca2024`
+- `bartek@bezhandlowca.pl` / `bezhandlowca2024`
+- `marta@bezhandlowca.pl` / `bezhandlowca2024`
+
+### Funkcjonalności CRM
+
+#### 📊 Dashboard z Statystykami
+- **Wszystkie leady** - całkowita liczba leadów
+- **Nowe** - leady oczekujące na kontakt
+- **Qualified** - leady po pierwszym kontakcie
+- **Zamknięte** - zakończone sukcesem
+- **Pipeline** - szacunkowa wartość w toku
+- **Konwersja** - % zamkniętych dealów
+
+#### 📋 Zarządzanie Leadami
+- **Filtrowanie** - wszystkie / nowe / moje
+- **Statusy leadów**:
+  - `new` - nowy lead
+  - `contacted` - pierwszy kontakt
+  - `qualified` - zakwalifikowany
+  - `proposal` - propozycja wysłana
+  - `closed` - zamknięty sukces
+  - `rejected` - odrzucony
+
+#### 👥 Przypisywanie Leadów
+- Automatyczne przypisywanie do pracowników
+- Filtrowanie leadów per pracownik
+- Historia zmian statusu
+
+#### 📞 Akcje na Leadach
+- **Bezpośredni kontakt** - tel/email z poziomu CRM
+- **Notatki** - dodawanie komentarzy
+- **Priorytety** - high/medium/low
+- **Wartość szacunkowa** - dla pipeline
+
+#### 🔔 Integracje
+- **Slack** - powiadomienia o zmianie statusu
+- **Google Sheets** - automatyczna synchronizacja
+- **Email** - powiadomienia dla zespołu
+
+### API Endpoints
+
+#### Leady
+- `GET /api/admin/leads` - pobierz wszystkie leady
+- `PATCH /api/admin/leads/[id]` - aktualizuj lead
+- `PATCH /api/admin/leads/[id]/assign` - przypisz lead
+
+#### Statystyki  
+- `GET /api/admin/stats` - statystyki dashboard
+
+### Google Sheets - Rozszerzone Kolumny
+
+Arkusz został rozszerzony o dodatkowe kolumny CRM:
+- **Przypisany do** (kolumna N)
+- **Priorytet** (kolumna O) 
+- **Wartość szacunkowa** (kolumna P)
+- **Ostatnia aktualizacja** (kolumna Q)
+- **Zaktualizowane przez** (kolumna R)
+
 ---
 
 **Built with ❤️ for Polish SME market** 

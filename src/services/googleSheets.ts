@@ -31,6 +31,11 @@ const SHEET_HEADERS = [
   'UTM Content',
   'Status',
   'Notatki',
+  'Przypisany do',
+  'Priorytet',
+  'Wartość szacunkowa',
+  'Ostatnia aktualizacja',
+  'Zaktualizowane przez',
 ];
 
 export class GoogleSheetsService {
@@ -327,6 +332,232 @@ export class GoogleSheetsService {
     } catch (error) {
       console.error('Google Sheets connection test failed:', error);
       return false;
+    }
+  }
+
+  /**
+   * Get all leads with full details for CRM
+   */
+  async getAllLeads(): Promise<any[]> {
+    try {
+      const response = await this.sheets.spreadsheets.values.get({
+        spreadsheetId: this.spreadsheetId,
+        range: 'Leads!A2:Z1000', // Rozszerzona kolumny dla CRM
+      });
+
+      const rows = response.data.values || [];
+      return rows.map((row: any[], index: number) => ({
+        id: (index + 2).toString(), // Row number as ID
+        timestamp: row[0] || '',
+        firstName: row[1] || '',
+        company: row[2] || '',
+        email: row[3] || '',
+        phone: row[4] || '',
+        message: row[5] || '',
+        source: row[6] || 'direct',
+        utm_campaign: row[7] || '',
+        utm_source: row[8] || '',
+        utm_medium: row[9] || '',
+        utm_content: row[10] || '',
+        status: row[11] || 'new',
+        notes: row[12] || '',
+        assignedTo: row[13] || '',
+        priority: row[14] || 'medium',
+        estimatedValue: row[15] ? parseFloat(row[15]) : null,
+        lastUpdated: row[16] || '',
+        updatedBy: row[17] || ''
+      }));
+    } catch (error) {
+      console.error('Error fetching all leads:', error);
+      return [];
+    }
+  }
+
+  /**
+   * Get single lead by ID
+   */
+  async getLeadById(id: string): Promise<any | null> {
+    try {
+      const rowIndex = parseInt(id);
+      const response = await this.sheets.spreadsheets.values.get({
+        spreadsheetId: this.spreadsheetId,
+        range: `Leads!A${rowIndex}:Z${rowIndex}`,
+      });
+
+      const row = response.data.values?.[0];
+      if (!row) return null;
+
+      return {
+        id,
+        timestamp: row[0] || '',
+        firstName: row[1] || '',
+        company: row[2] || '',
+        email: row[3] || '',
+        phone: row[4] || '',
+        message: row[5] || '',
+        source: row[6] || 'direct',
+        utm_campaign: row[7] || '',
+        utm_source: row[8] || '',
+        utm_medium: row[9] || '',
+        utm_content: row[10] || '',
+        status: row[11] || 'new',
+        notes: row[12] || '',
+        assignedTo: row[13] || '',
+        priority: row[14] || 'medium',
+        estimatedValue: row[15] ? parseFloat(row[15]) : null,
+        lastUpdated: row[16] || '',
+        updatedBy: row[17] || ''
+      };
+    } catch (error) {
+      console.error('Error fetching lead by ID:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Update lead with CRM data
+   */
+  async updateLead(id: string, updateData: {
+    status?: string;
+    notes?: string;
+    assignedTo?: string;
+    priority?: string;
+    estimatedValue?: number;
+    lastUpdated?: string;
+    updatedBy?: string;
+  }): Promise<void> {
+    try {
+      const rowIndex = parseInt(id);
+      const currentLead = await this.getLeadById(id);
+      if (!currentLead) throw new Error('Lead not found');
+
+      // Prepare update values - only update provided fields
+      const updates: any[] = [];
+
+      if (updateData.status !== undefined) {
+        updates.push({
+          range: `Leads!L${rowIndex}`,
+          values: [[updateData.status]]
+        });
+      }
+
+      if (updateData.notes !== undefined) {
+        updates.push({
+          range: `Leads!M${rowIndex}`,
+          values: [[updateData.notes]]
+        });
+      }
+
+      if (updateData.assignedTo !== undefined) {
+        updates.push({
+          range: `Leads!N${rowIndex}`,
+          values: [[updateData.assignedTo]]
+        });
+      }
+
+      if (updateData.priority !== undefined) {
+        updates.push({
+          range: `Leads!O${rowIndex}`,
+          values: [[updateData.priority]]
+        });
+      }
+
+      if (updateData.estimatedValue !== undefined) {
+        updates.push({
+          range: `Leads!P${rowIndex}`,
+          values: [[updateData.estimatedValue]]
+        });
+      }
+
+      if (updateData.lastUpdated !== undefined) {
+        updates.push({
+          range: `Leads!Q${rowIndex}`,
+          values: [[updateData.lastUpdated]]
+        });
+      }
+
+      if (updateData.updatedBy !== undefined) {
+        updates.push({
+          range: `Leads!R${rowIndex}`,
+          values: [[updateData.updatedBy]]
+        });
+      }
+
+      // Batch update all changes
+      if (updates.length > 0) {
+        await this.sheets.spreadsheets.values.batchUpdate({
+          spreadsheetId: this.spreadsheetId,
+          resource: {
+            valueInputOption: 'USER_ENTERED',
+            data: updates
+          }
+        });
+      }
+    } catch (error) {
+      console.error('Error updating lead:', error);
+      throw new Error('Failed to update lead');
+    }
+  }
+
+  /**
+   * Assign lead to team member
+   */
+  async assignLead(id: string, assignedTo: string): Promise<void> {
+    try {
+      await this.updateLead(id, {
+        assignedTo,
+        lastUpdated: new Date().toISOString(),
+        updatedBy: assignedTo
+      });
+    } catch (error) {
+      console.error('Error assigning lead:', error);
+      throw new Error('Failed to assign lead');
+    }
+  }
+
+  /**
+   * Get detailed stats for CRM dashboard
+   */
+  async getDetailedStats(): Promise<{
+    totalLeads: number;
+    newLeads: number;
+    qualifiedLeads: number;
+    closedDeals: number;
+    estimatedPipeline: number;
+    conversionRate: number;
+  }> {
+    try {
+      const leads = await this.getAllLeads();
+      
+      const totalLeads = leads.length;
+      const newLeads = leads.filter(lead => lead.status === 'new').length;
+      const qualifiedLeads = leads.filter(lead => lead.status === 'qualified').length;
+      const closedDeals = leads.filter(lead => lead.status === 'closed').length;
+      
+      const pipeline = leads
+        .filter(lead => ['qualified', 'proposal'].includes(lead.status))
+        .reduce((sum, lead) => sum + (lead.estimatedValue || 0), 0);
+
+      const conversionRate = totalLeads > 0 ? Math.round((closedDeals / totalLeads) * 100) : 0;
+
+      return {
+        totalLeads,
+        newLeads,
+        qualifiedLeads,
+        closedDeals,
+        estimatedPipeline: pipeline,
+        conversionRate
+      };
+    } catch (error) {
+      console.error('Error getting detailed stats:', error);
+      return {
+        totalLeads: 0,
+        newLeads: 0,
+        qualifiedLeads: 0,
+        closedDeals: 0,
+        estimatedPipeline: 0,
+        conversionRate: 0
+      };
     }
   }
 }
