@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { googleSheetsService } from '@/services/googleSheets';
 
+// Force dynamic rendering for this API route
+export const dynamic = 'force-dynamic';
+
 export async function PATCH(
   request: NextRequest,
   { params }: { params: { id: string } }

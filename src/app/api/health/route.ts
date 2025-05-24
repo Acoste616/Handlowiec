@@ -14,38 +14,54 @@ export async function GET(): Promise<NextResponse<HealthCheckResponse>> {
   const startTime = Date.now();
   
   try {
-    // Test all service connections in parallel
-    const [
-      googleSheetsStatus,
-      hubspotStatus,
-      emailStatus,
-      slackStatus,
-    ] = await Promise.allSettled([
-      googleSheetsService.testConnection(),
-      hubspotService.testConnection(),
-      emailService.testConnection(),
-      slackService.testConnection(),
-    ]);
+    // In development mode, skip actual service checks to avoid errors
+    const isDevelopment = process.env.NODE_ENV === 'development' || process.env.DISABLE_EXTERNAL_SERVICES === 'true';
+    
+    let services;
+    
+    if (isDevelopment) {
+      // Mock healthy services in development
+      services = {
+        database: 'connected' as const,
+        email: 'connected' as const,
+        googleSheets: 'connected' as const,
+        hubspot: 'connected' as const,
+        slack: 'connected' as const,
+      };
+    } else {
+      // Test all service connections in parallel in production
+      const [
+        googleSheetsStatus,
+        hubspotStatus,
+        emailStatus,
+        slackStatus,
+      ] = await Promise.allSettled([
+        googleSheetsService.testConnection(),
+        hubspotService.testConnection(),
+        emailService.testConnection(),
+        slackService.testConnection(),
+      ]);
 
-    const services = {
-      database: 'connected' as const, // Using Google Sheets as primary DB
-      email: emailStatus.status === 'fulfilled' && emailStatus.value 
-        ? 'connected' as const 
-        : 'disconnected' as const,
-      googleSheets: googleSheetsStatus.status === 'fulfilled' && googleSheetsStatus.value 
-        ? 'connected' as const 
-        : 'disconnected' as const,
-      hubspot: hubspotService.isIntegrationEnabled() 
-        ? (hubspotStatus.status === 'fulfilled' && hubspotStatus.value 
-            ? 'connected' as const 
-            : 'disconnected' as const)
-        : 'connected' as const, // Consider disabled as healthy
-      slack: slackService.isIntegrationEnabled()
-        ? (slackStatus.status === 'fulfilled' && slackStatus.value 
-            ? 'connected' as const 
-            : 'disconnected' as const)
-        : 'connected' as const, // Consider disabled as healthy
-    };
+      services = {
+        database: 'connected' as const, // Using Google Sheets as primary DB
+        email: emailStatus.status === 'fulfilled' && emailStatus.value 
+          ? 'connected' as const 
+          : 'disconnected' as const,
+        googleSheets: googleSheetsStatus.status === 'fulfilled' && googleSheetsStatus.value 
+          ? 'connected' as const 
+          : 'disconnected' as const,
+        hubspot: hubspotService.isIntegrationEnabled() 
+          ? (hubspotStatus.status === 'fulfilled' && hubspotStatus.value 
+              ? 'connected' as const 
+              : 'disconnected' as const)
+          : 'connected' as const, // Consider disabled as healthy
+        slack: slackService.isIntegrationEnabled()
+          ? (slackStatus.status === 'fulfilled' && slackStatus.value 
+              ? 'connected' as const 
+              : 'disconnected' as const)
+          : 'connected' as const, // Consider disabled as healthy
+      };
+    }
 
     // Determine overall health status
     const criticalServices = ['googleSheets', 'email'] as const;
@@ -53,7 +69,7 @@ export async function GET(): Promise<NextResponse<HealthCheckResponse>> {
       service => services[service] === 'disconnected'
     );
 
-    const overallStatus = isCriticalServiceDown ? 'unhealthy' : 'healthy';
+    const overallStatus = isDevelopment ? 'healthy' : (isCriticalServiceDown ? 'unhealthy' : 'healthy');
     const responseTime = Date.now() - startTime;
 
     const response: HealthCheckResponse = {
@@ -64,7 +80,7 @@ export async function GET(): Promise<NextResponse<HealthCheckResponse>> {
     };
 
     // Log health check
-    console.log(`Health check completed in ${responseTime}ms - Status: ${overallStatus}`);
+    console.log(`Health check completed in ${responseTime}ms - Status: ${overallStatus}${isDevelopment ? ' (development mode)' : ''}`);
 
     return NextResponse.json(response, {
       status: overallStatus === 'healthy' ? 200 : 503,
@@ -101,7 +117,17 @@ export async function GET(): Promise<NextResponse<HealthCheckResponse>> {
  */
 export async function HEAD(): Promise<NextResponse> {
   try {
-    // Quick ping without running full health checks
+    // In development, always return healthy
+    const isDevelopment = process.env.NODE_ENV === 'development' || process.env.DISABLE_EXTERNAL_SERVICES === 'true';
+    
+    if (isDevelopment) {
+      return NextResponse.json(
+        { status: 'ok' },
+        { status: 200 }
+      );
+    }
+    
+    // Quick ping without running full health checks in production
     const isHealthy = await googleSheetsService.testConnection();
     
     return NextResponse.json(

@@ -1,8 +1,40 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { googleSheetsService } from '@/services/googleSheets';
 
+// Force dynamic rendering for this API route
+export const dynamic = 'force-dynamic';
+
 export async function GET(request: NextRequest) {
   try {
+    // In development mode, return mock data
+    const isDevelopment = process.env.NODE_ENV === 'development' || process.env.DISABLE_EXTERNAL_SERVICES === 'true';
+    
+    if (isDevelopment) {
+      return NextResponse.json({
+        success: true,
+        leads: [
+          {
+            id: '1',
+            timestamp: new Date().toISOString(),
+            firstName: 'Jan',
+            lastName: 'Kowalski',
+            company: 'Test Company',
+            email: 'jan@test.com',
+            phone: '+48 123 456 789',
+            message: 'Test lead message',
+            source: 'Website',
+            status: 'new',
+            assignedTo: null,
+            notes: '',
+            priority: 'medium',
+            estimatedValue: 50000,
+            lastUpdated: new Date().toISOString(),
+            updatedBy: null
+          }
+        ]
+      });
+    }
+
     // W rzeczywistości dodałbyś tutaj auth middleware
     const authHeader = request.headers.get('authorization');
     // Tymczasowo wyłączamy auth dla developmentu

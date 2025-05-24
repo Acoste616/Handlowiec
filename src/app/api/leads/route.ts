@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { z } from 'zod';
 import { googleSheetsService } from '@/services/googleSheets';
 import { hubspotService } from '@/services/hubspot';
 import { emailService } from '@/services/email';
@@ -8,6 +9,9 @@ import { leadFormSchema } from '@/lib/validations';
 import { sanitizeString, generateTrackingId, extractUTMParams, createRateLimiter } from '@/utils';
 import type { ApiResponse } from '@/types/api';
 import type { LeadFormData } from '@/types/form';
+
+// Force dynamic rendering for this API route
+export const dynamic = 'force-dynamic';
 
 // Rate limiter instance
 const rateLimiter = createRateLimiter(
