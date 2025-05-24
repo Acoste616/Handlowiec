@@ -1,43 +1,110 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 interface FormData {
+  firstName: string;
+  company: string;
   email: string;
   phone: string;
+  message: string;
+  consent: boolean;
 }
 
 export default function FinalCTA() {
-  const [formData, setFormData] = useState<FormData>({ email: '', phone: '' });
+  const router = useRouter();
+  const [formData, setFormData] = useState<FormData>({
+    firstName: '',
+    company: '',
+    email: '',
+    phone: '',
+    message: 'Chcę umówić bezpłatną konsultację w sprawie outsourcingu sprzedaży.',
+    consent: false
+  });
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState('');
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value, type } = e.target;
     setFormData(prev => ({
       ...prev,
-      [e.target.name]: e.target.value
+      [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked : value
     }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Add form submission logic
-    setIsSubmitted(true);
-    
-    // Auto-trigger follow-up
-    setTimeout(() => {
-      // TODO: Add auto-email with calendar link
-    }, 1000);
+    setError('');
+    setIsSubmitting(true);
+
+    // Basic validation
+    if (!formData.firstName.trim()) {
+      setError('Imię jest wymagane');
+      setIsSubmitting(false);
+      return;
+    }
+
+    if (!formData.email.trim()) {
+      setError('Email jest wymagany');
+      setIsSubmitting(false);
+      return;
+    }
+
+    if (!formData.phone.trim()) {
+      setError('Telefon jest wymagany');
+      setIsSubmitting(false);
+      return;
+    }
+
+    if (!formData.consent) {
+      setError('Zgoda na przetwarzanie danych jest wymagana');
+      setIsSubmitting(false);
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/leads', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...formData,
+          source: 'final-cta'
+        }),
+      });
+
+      const result = await response.json();
+
+      if (response.ok && result.success) {
+        setIsSubmitted(true);
+        // Redirect to thank you page after a short delay
+        setTimeout(() => {
+          router.push('/thank-you');
+        }, 2000);
+      } else {
+        setError(result.message || 'Wystąpił błąd podczas wysyłania formularza');
+      }
+    } catch (error) {
+      setError('Wystąpił błąd podczas wysyłania formularza. Spróbuj ponownie.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (isSubmitted) {
-        return (      <section id="final-cta" className="py-20 bg-gradient-to-br from-secondary-500 to-secondary-600 text-white">        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+    return (
+      <section id="final-cta" className="py-20 bg-gradient-to-br from-secondary-500 to-secondary-600 text-white">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div className="bg-white/10 backdrop-blur-sm p-12 rounded-2xl">
             <div className="text-6xl mb-6">🎉</div>
             <h2 className="text-3xl font-bold mb-4">
               Doskonale! Jesteś już na liście.
             </h2>
             <p className="text-xl mb-6">
-              Sprawdź email - wysłaliśmy Ci link do kalendarza z dostępnymi terminami.
+              Twoje zgłoszenie zostało wysłane. Oddzwonimy w ciągu 24 godzin.
             </p>
             <div className="bg-white/10 p-6 rounded-lg">
               <p className="text-lg font-semibold mb-2">Co dalej?</p>
@@ -47,13 +114,18 @@ export default function FinalCTA() {
                 📊 Przygotujemy wstępną analizę Twojej branży
               </p>
             </div>
+            <p className="text-sm mt-4 opacity-75">
+              Przekierowujemy Cię na stronę podziękowania...
+            </p>
           </div>
         </div>
       </section>
     );
   }
 
-    return (    <section id="final-cta" className="py-20 bg-gradient-to-br from-secondary-500 to-secondary-600 text-white">      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+  return (
+    <section id="final-cta" className="py-20 bg-gradient-to-br from-secondary-500 to-secondary-600 text-white">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           
           {/* Content */}
@@ -105,7 +177,39 @@ export default function FinalCTA() {
               </p>
             </div>
 
+            {error && (
+              <div className="mb-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+                {error}
+              </div>
+            )}
+
             <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <input
+                  type="text"
+                  name="firstName"
+                  placeholder="Twoje imię"
+                  value={formData.firstName}
+                  onChange={handleInputChange}
+                  required
+                  className="w-full px-4 py-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-lg"
+                  disabled={isSubmitting}
+                />
+              </div>
+
+              <div>
+                <input
+                  type="text"
+                  name="company"
+                  placeholder="Nazwa firmy"
+                  value={formData.company}
+                  onChange={handleInputChange}
+                  required
+                  className="w-full px-4 py-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-lg"
+                  disabled={isSubmitting}
+                />
+              </div>
+
               <div>
                 <input
                   type="email"
@@ -115,6 +219,7 @@ export default function FinalCTA() {
                   onChange={handleInputChange}
                   required
                   className="w-full px-4 py-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-lg"
+                  disabled={isSubmitting}
                 />
               </div>
               
@@ -127,14 +232,54 @@ export default function FinalCTA() {
                   onChange={handleInputChange}
                   required
                   className="w-full px-4 py-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-lg"
+                  disabled={isSubmitting}
                 />
+              </div>
+
+              <div>
+                <textarea
+                  name="message"
+                  placeholder="Dodatkowe informacje (opcjonalnie)"
+                  value={formData.message}
+                  onChange={handleInputChange}
+                  rows={3}
+                  className="w-full px-4 py-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-lg"
+                  disabled={isSubmitting}
+                />
+              </div>
+
+              <div className="flex items-start">
+                <input
+                  type="checkbox"
+                  name="consent"
+                  id="consent-final"
+                  checked={formData.consent}
+                  onChange={handleInputChange}
+                  required
+                  className="mt-1 mr-3 h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
+                  disabled={isSubmitting}
+                />
+                <label htmlFor="consent-final" className="text-sm text-gray-600">
+                  Wyrażam zgodę na przetwarzanie moich danych osobowych zgodnie z{' '}
+                  <a href="/privacy" className="text-primary-600 hover:text-primary-700 underline">
+                    polityką prywatności
+                  </a>
+                </label>
               </div>
 
               <button
                 type="submit"
-                className="w-full bg-secondary-500 text-white py-4 px-6 rounded-lg font-semibold text-xl hover:bg-secondary-600 transition-all duration-200 transform hover:scale-105 shadow-lg"
+                disabled={isSubmitting}
+                className="w-full bg-secondary-500 text-white py-4 px-6 rounded-lg font-semibold text-xl hover:bg-secondary-600 transition-all duration-200 transform hover:scale-105 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
               >
-                Umów konsultację (0 zł)
+                {isSubmitting ? (
+                  <div className="flex items-center justify-center">
+                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                    Wysyłanie...
+                  </div>
+                ) : (
+                  'Umów konsultację (0 zł)'
+                )}
               </button>
 
               <div className="text-center pt-4">
@@ -152,7 +297,7 @@ export default function FinalCTA() {
             <div className="mt-6 pt-6 border-t border-gray-200 text-center">
               <p className="text-sm text-gray-500">
                 Preferujesz zadzwonić? <br />
-                <span className="font-semibold text-gray-700">+48 XXX XXX XXX</span>
+                <span className="font-semibold text-gray-700">+48 123 456 789</span>
               </p>
             </div>
           </div>

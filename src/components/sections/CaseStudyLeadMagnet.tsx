@@ -5,12 +5,17 @@ import { useState } from 'react';
 interface FormData {
   email: string;
   phone: string;
+  firstName: string;
+  company: string;
+  consent: boolean;
 }
 
 export default function CaseStudyLeadMagnet() {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [formData, setFormData] = useState<FormData>({ email: '', phone: '' });
+  const [formData, setFormData] = useState<FormData>({ email: '', phone: '', firstName: '', company: '', consent: false });
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState('');
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData(prev => ({
@@ -21,16 +26,65 @@ export default function CaseStudyLeadMagnet() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Add form submission logic
-    setIsSubmitted(true);
-    
-    // Auto-trigger follow-up
-    setTimeout(() => {
-      setIsModalOpen(false);
-      setIsSubmitted(false);
-      setFormData({ email: '', phone: '' });
-      // TODO: Add auto-email with calendar link
-    }, 3000);
+    setIsSubmitting(true);
+    setError('');
+
+    // Basic validation
+    if (!formData.firstName.trim()) {
+      setError('Imię jest wymagane');
+      setIsSubmitting(false);
+      return;
+    }
+
+    if (!formData.email.trim()) {
+      setError('Email jest wymagany');
+      setIsSubmitting(false);
+      return;
+    }
+
+    if (!formData.phone.trim()) {
+      setError('Telefon jest wymagany');
+      setIsSubmitting(false);
+      return;
+    }
+
+    if (!formData.consent) {
+      setError('Zgoda na przetwarzanie danych jest wymagana');
+      setIsSubmitting(false);
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/leads', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...formData,
+          message: 'Proszę o przesłanie case study dotyczącego zwiększenia liczby leadów o 6x w 90 dni.',
+          source: 'case-study-lead-magnet'
+        }),
+      });
+
+      const result = await response.json();
+
+      if (response.ok && result.success) {
+        setIsSubmitted(true);
+        // Auto-close modal after success
+        setTimeout(() => {
+          setIsModalOpen(false);
+          setIsSubmitted(false);
+          setFormData({ firstName: '', company: '', email: '', phone: '', consent: false });
+        }, 3000);
+      } else {
+        setError(result.message || 'Wystąpił błąd podczas wysyłania formularza');
+      }
+    } catch (error) {
+      setError('Wystąpił błąd podczas wysyłania formularza. Spróbuj ponownie.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const openModal = () => {
@@ -40,7 +94,7 @@ export default function CaseStudyLeadMagnet() {
   const closeModal = () => {
     setIsModalOpen(false);
     setIsSubmitted(false);
-    setFormData({ email: '', phone: '' });
+    setFormData({ email: '', phone: '', firstName: '', company: '', consent: false });
   };
 
   return (
@@ -153,7 +207,39 @@ export default function CaseStudyLeadMagnet() {
                   </p>
                 </div>
 
+                {error && (
+                  <div className="mb-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+                    {error}
+                  </div>
+                )}
+
                 <form onSubmit={handleSubmit} className="space-y-4">
+                  <div>
+                    <input
+                      type="text"
+                      name="firstName"
+                      placeholder="Imię"
+                      value={formData.firstName}
+                      onChange={handleInputChange}
+                      required
+                      disabled={isSubmitting}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    />
+                  </div>
+                  
+                  <div>
+                    <input
+                      type="text"
+                      name="company"
+                      placeholder="Nazwa firmy"
+                      value={formData.company}
+                      onChange={handleInputChange}
+                      required
+                      disabled={isSubmitting}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    />
+                  </div>
+
                   <div>
                     <input
                       type="email"
@@ -162,6 +248,7 @@ export default function CaseStudyLeadMagnet() {
                       value={formData.email}
                       onChange={handleInputChange}
                       required
+                      disabled={isSubmitting}
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                     />
                   </div>
@@ -174,15 +261,43 @@ export default function CaseStudyLeadMagnet() {
                       value={formData.phone}
                       onChange={handleInputChange}
                       required
+                      disabled={isSubmitting}
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                     />
                   </div>
 
+                  <div className="flex items-start">
+                    <input
+                      type="checkbox"
+                      name="consent"
+                      id="consent-case-study"
+                      checked={formData.consent}
+                      onChange={(e) => setFormData(prev => ({ ...prev, consent: e.target.checked }))}
+                      required
+                      disabled={isSubmitting}
+                      className="mt-1 mr-3 h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
+                    />
+                    <label htmlFor="consent-case-study" className="text-sm text-gray-600">
+                      Wyrażam zgodę na przetwarzanie moich danych osobowych zgodnie z{' '}
+                      <a href="/privacy" className="text-primary-600 hover:text-primary-700 underline">
+                        polityką prywatności
+                      </a>
+                    </label>
+                  </div>
+
                   <button
                     type="submit"
-                    className="w-full bg-secondary-500 text-white py-3 px-6 rounded-lg font-semibold hover:bg-secondary-600 transition-colors"
+                    disabled={isSubmitting}
+                    className="w-full bg-secondary-500 text-white py-3 px-6 rounded-lg font-semibold hover:bg-secondary-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    Wyślij case study
+                    {isSubmitting ? (
+                      <div className="flex items-center justify-center">
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                        Wysyłanie...
+                      </div>
+                    ) : (
+                      'Wyślij case study'
+                    )}
                   </button>
 
                   <p className="text-xs text-gray-500 text-center">
