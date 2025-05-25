@@ -11,6 +11,8 @@ const inter = Inter({
   subsets: ['latin', 'latin-ext'],
   variable: '--font-inter',
   display: 'swap',
+  fallback: ['system-ui', 'arial'],
+  preload: true,
 });
 
 const poppins = Poppins({
@@ -18,6 +20,8 @@ const poppins = Poppins({
   weight: ['400', '500', '600', '700', '800'],
   variable: '--font-poppins',
   display: 'swap',
+  fallback: ['system-ui', 'arial'],
+  preload: true,
 });
 
 const organizationSchema = {  "@context": "https://schema.org",  "@type": "Organization",  "name": "BezHandlowca Sp. z o.o.",  "alternateName": "BezHandlowca.pl",  "url": config.app.url,  "logo": `${config.app.url}/logo.svg`,  "description": "Sprzedaż B2B bez handlowca - przejmujemy cały proces sprzedaży za Ciebie",

@@ -1,10 +1,7 @@
 /** @type {import('next').NextConfig} */
-const { withSentryConfig } = require('@sentry/nextjs');
-
 const nextConfig = {
   experimental: {
     serverComponentsExternalPackages: ['@supabase/supabase-js'],
-    isrMemoryCacheSize: 0,
   },
   
   // Skip API routes during build if no Supabase config
@@ -35,19 +32,11 @@ const nextConfig = {
     return config;
   },
 
-  // Sentry configuration
-  sentry: {
-    hideSourceMaps: true,
-  },
-
   // Image optimization
   images: {
     domains: ['localhost'],
     unoptimized: true,
   },
-
-  // Output configuration for Vercel
-  output: 'standalone',
 
   // TypeScript configuration
   typescript: {
@@ -58,9 +47,6 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true, // Temporary fix for Vercel build
   },
-
-  // Disable telemetry
-  telemetry: false,
 
   // Compression
   compress: true,
@@ -110,12 +96,6 @@ const nextConfig = {
   },
 
   generateEtags: false,
-};
-
-const sentryWebpackPluginOptions = {
-  silent: true,
-  org: 'bezhandlowca',
-  project: 'bezhandlowca-mvp',
 };
 
 module.exports = nextConfig; 
