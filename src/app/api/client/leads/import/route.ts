@@ -1,190 +1,207 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabaseAdmin } from '@/lib/supabase/client';
+import { supabaseAdmin, isSupabaseConfigured } from '@/lib/supabase/client';
 import { ImportLeadsSchema, CreateLeadSchema } from '@/lib/validations/lead.schema';
 import { z } from 'zod';
 
+// Force dynamic rendering
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+
+// Polish CSV headers mapping
+const POLISH_HEADERS_MAP: Record<string, string> = {
+  'imię': 'first_name',
+  'imie': 'first_name',
+  'nazwisko': 'last_name',
+  'firma': 'company',
+  'przedsiębiorstwo': 'company',
+  'email': 'email',
+  'e-mail': 'email',
+  'telefon': 'phone',
+  'tel': 'phone',
+  'status': 'status',
+  'priorytet': 'priority',
+  'wartość': 'estimated_value',
+  'wartosc': 'estimated_value',
+  'prawdopodobieństwo': 'closing_probability',
+  'prawdopodobienstwo': 'closing_probability',
+  'źródło': 'source',
+  'zrodlo': 'source',
+  'notatki': 'notes',
+  'uwagi': 'notes',
+};
+
+function parseCSV(csvText: string): any[] {
+  const lines = csvText.trim().split('\n');
+  if (lines.length < 2) return [];
+
+  const headers = lines[0].split(',').map(h => h.trim().toLowerCase().replace(/"/g, ''));
+  const mappedHeaders = headers.map(header => POLISH_HEADERS_MAP[header] || header);
+
+  const data = [];
+  for (let i = 1; i < lines.length; i++) {
+    const values = lines[i].split(',').map(v => v.trim().replace(/"/g, ''));
+    const row: any = {};
+    
+    mappedHeaders.forEach((header, index) => {
+      if (values[index]) {
+        row[header] = values[index];
+      }
+    });
+
+    // Validate required fields
+    if (row.first_name && row.last_name && row.email && row.company) {
+      data.push(row);
+    }
+  }
+
+  return data;
+}
+
 export async function POST(request: NextRequest) {
   try {
-    // Check if Supabase is properly configured
-    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SERVICE_KEY) {
-      return NextResponse.json(
-        { error: 'Supabase not configured' },
-        { status: 503 }
-      );
+    // Check if Supabase is configured
+    if (!isSupabaseConfigured()) {
+      console.warn('⚠️ Supabase not configured, returning mock response for build');
+      return NextResponse.json({
+        success: false,
+        message: 'Service temporarily unavailable',
+        imported: 0,
+        errors: []
+      });
     }
 
-    // Get client context from middleware
-    const clientId = request.headers.get('x-client-id');
-    const userId = request.headers.get('x-user-id');
+    const { searchParams } = new URL(request.url);
+    const clientId = searchParams.get('clientId');
 
-    if (!clientId || !userId) {
+    if (!clientId) {
       return NextResponse.json(
-        { error: 'Missing client context' },
+        { error: 'Client ID is required' },
         { status: 400 }
       );
     }
 
-    const body = await request.json();
-    
-    // Validate request body
-    const validationResult = ImportLeadsSchema.safeParse(body);
-    if (!validationResult.success) {
+    const formData = await request.formData();
+    const file = formData.get('file') as File;
+
+    if (!file) {
       return NextResponse.json(
-        { 
-          error: 'Validation failed',
-          details: validationResult.error.errors 
-        },
+        { error: 'No file provided' },
         { status: 400 }
       );
     }
 
-    const { leads, skip_duplicates, update_existing } = validationResult.data;
+    // Check file type
+    if (!file.name.endsWith('.csv')) {
+      return NextResponse.json(
+        { error: 'Only CSV files are allowed' },
+        { status: 400 }
+      );
+    }
 
-    // Process leads in batches for better performance
-    const BATCH_SIZE = 100;
-    const results = {
-      total: leads.length,
-      imported: 0,
-      updated: 0,
-      skipped: 0,
-      errors: [] as Array<{ row: number; error: string; data: any }>,
-    };
+    // Check file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      return NextResponse.json(
+        { error: 'File too large. Maximum size is 5MB' },
+        { status: 400 }
+      );
+    }
 
-    for (let i = 0; i < leads.length; i += BATCH_SIZE) {
-      const batch = leads.slice(i, i + BATCH_SIZE);
+    const csvText = await file.text();
+    const leads = parseCSV(csvText);
+
+    if (leads.length === 0) {
+      return NextResponse.json(
+        { error: 'No valid leads found in CSV file' },
+        { status: 400 }
+      );
+    }
+
+    // Limit to 1000 leads per import
+    if (leads.length > 1000) {
+      return NextResponse.json(
+        { error: 'Too many leads. Maximum 1000 leads per import' },
+        { status: 400 }
+      );
+    }
+
+    // Prepare leads for insertion
+    const leadsToInsert = leads.map(lead => ({
+      client_id: clientId,
+      first_name: lead.first_name,
+      last_name: lead.last_name,
+      company: lead.company,
+      email: lead.email,
+      phone: lead.phone || null,
+      status: lead.status || 'new',
+      priority: lead.priority || 'medium',
+      estimated_value: lead.estimated_value ? parseFloat(lead.estimated_value) : null,
+      closing_probability: lead.closing_probability ? parseInt(lead.closing_probability) : 50,
+      source: lead.source || 'csv_import',
+      notes: lead.notes || null,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    }));
+
+    // Insert leads in batches
+    const batchSize = 100;
+    const errors: string[] = [];
+    let imported = 0;
+
+    for (let i = 0; i < leadsToInsert.length; i += batchSize) {
+      const batch = leadsToInsert.slice(i, i + batchSize);
       
-      for (let j = 0; j < batch.length; j++) {
-        const leadData = batch[j];
-        const rowNumber = i + j + 1;
+      try {
+        const { data, error } = await supabaseAdmin
+          .from('leads')
+          .insert(batch)
+          .select('id');
 
-        try {
-          // Validate individual lead
-          const leadValidation = CreateLeadSchema.safeParse(leadData);
-          if (!leadValidation.success) {
-            results.errors.push({
-              row: rowNumber,
-              error: `Validation error: ${leadValidation.error.errors.map(e => e.message).join(', ')}`,
-              data: leadData,
-            });
-            continue;
-          }
-
-          const validLead = leadValidation.data;
-
-          // Check for existing lead by email
-          const { data: existingLead } = await supabaseAdmin
-            .from('leads')
-            .select('id, email')
-            .eq('client_id', clientId)
-            .eq('email', validLead.email)
-            .single();
-
-          if (existingLead) {
-            if (skip_duplicates && !update_existing) {
-              results.skipped++;
-              continue;
-            }
-
-            if (update_existing) {
-              // Update existing lead
-              const { error: updateError } = await supabaseAdmin
-                .from('leads')
-                .update({
-                  ...validLead,
-                  client_id: clientId,
-                  updated_at: new Date().toISOString(),
-                })
-                .eq('id', existingLead.id);
-
-              if (updateError) {
-                results.errors.push({
-                  row: rowNumber,
-                  error: `Update failed: ${updateError.message}`,
-                  data: leadData,
-                });
-              } else {
-                results.updated++;
-                
-                // Create activity for update
-                await supabaseAdmin
-                  .from('activities')
-                  .insert({
-                    lead_id: existingLead.id,
-                    user_id: userId,
-                    type: 'note',
-                    description: 'Lead updated via CSV import',
-                    metadata: { import_source: 'csv', row_number: rowNumber },
-                  });
-              }
-            } else {
-              results.skipped++;
-            }
-          } else {
-            // Create new lead
-            const { data: newLead, error: insertError } = await supabaseAdmin
-              .from('leads')
-              .insert({
-                ...validLead,
-                client_id: clientId,
-              })
-              .select('id')
-              .single();
-
-            if (insertError) {
-              results.errors.push({
-                row: rowNumber,
-                error: `Insert failed: ${insertError.message}`,
-                data: leadData,
-              });
-            } else {
-              results.imported++;
-              
-              // Create initial activity
-              await supabaseAdmin
-                .from('activities')
-                .insert({
-                  lead_id: newLead.id,
-                  user_id: userId,
-                  type: 'note',
-                  description: 'Lead imported via CSV',
-                  metadata: { import_source: 'csv', row_number: rowNumber },
-                });
-            }
-          }
-        } catch (error) {
-          results.errors.push({
-            row: rowNumber,
-            error: `Processing error: ${error instanceof Error ? error.message : 'Unknown error'}`,
-            data: leadData,
-          });
+        if (error) {
+          console.error('Batch insert error:', error);
+          errors.push(`Batch ${Math.floor(i / batchSize) + 1}: ${error.message}`);
+        } else {
+          imported += data?.length || 0;
         }
+      } catch (batchError) {
+        console.error('Batch processing error:', batchError);
+        errors.push(`Batch ${Math.floor(i / batchSize) + 1}: Processing failed`);
       }
     }
 
-    // Create import summary activity
-    await supabaseAdmin
-      .from('activities')
-      .insert({
-        lead_id: null, // System activity
-        user_id: userId,
-        type: 'note',
-        description: `CSV import completed: ${results.imported} imported, ${results.updated} updated, ${results.skipped} skipped, ${results.errors.length} errors`,
-        metadata: { 
-          import_summary: results,
-          import_timestamp: new Date().toISOString(),
-        },
-      });
+    // Log import activity
+    try {
+      await supabaseAdmin
+        .from('activities')
+        .insert({
+          lead_id: null, // System activity
+          user_id: null,
+          type: 'csv_import',
+          description: `Imported ${imported} leads from CSV file: ${file.name}`,
+          metadata: {
+            filename: file.name,
+            total_leads: leads.length,
+            imported_leads: imported,
+            errors_count: errors.length,
+            client_id: clientId
+          },
+          created_at: new Date().toISOString(),
+        });
+    } catch (activityError) {
+      console.error('Failed to log import activity:', activityError);
+    }
 
     return NextResponse.json({
       success: true,
-      results,
-      message: `Import completed: ${results.imported} leads imported, ${results.updated} updated, ${results.skipped} skipped`,
+      message: `Successfully imported ${imported} leads`,
+      imported,
+      total: leads.length,
+      errors: errors.length > 0 ? errors : undefined,
     });
 
   } catch (error) {
-    console.error('Leads import error:', error);
+    console.error('CSV import error:', error);
     return NextResponse.json(
-      { error: 'Failed to import leads' },
+      { error: 'Failed to import CSV file' },
       { status: 500 }
     );
   }

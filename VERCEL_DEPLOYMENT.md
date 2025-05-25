@@ -1,139 +1,208 @@
-# 🚀 Vercel Deployment Guide
+# 🚀 Deployment do Vercel - BezHandlowca.pl
 
-## ✅ Status: Gotowe do Deployment
+## 📋 Wymagane Zmienne Środowiskowe
 
-Projekt jest w pełni skonfigurowany i gotowy do wdrożenia na Vercel.
+Przed deploymentem ustaw następujące zmienne środowiskowe w Vercel Dashboard:
 
-## 📋 Krok 1: Przygotowanie Vercel
-
-### 1.1 Połącz z GitHub
-1. Idź na [vercel.com](https://vercel.com)
-2. Zaloguj się i kliknij **"New Project"**
-3. Wybierz repozytorium: `Acoste616/Handlowiec`
-4. Kliknij **"Import"**
-
-### 1.2 Konfiguracja Build
-- **Framework Preset**: Next.js
-- **Root Directory**: `./` (domyślnie)
-- **Build Command**: `npm run build` (domyślnie)
-- **Output Directory**: `.next` (domyślnie)
-
-## 📋 Krok 2: Zmienne Środowiskowe
-
-W sekcji **Environment Variables** dodaj następujące zmienne:
-
-### 🔑 Supabase (WYMAGANE)
-```
+### 🔑 Supabase Configuration (WYMAGANE)
+```bash
 NEXT_PUBLIC_SUPABASE_URL=https://dchwetwqmmeqyxlcqlac.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRjaHdldHdxbW1lcXl4bGNxbGFjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDgxNTU3MTksImV4cCI6MjA2MzczMTcxOX0.pdxKSoJvgpxHWaerbMNfbP9ZNtRVc6JTr6HSCsGnIp4
 SUPABASE_SERVICE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRjaHdldHdxbW1lcXl4bGNxbGFjIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0ODE1NTcxOSwiZXhwIjoyMDYzNzMxNzE5fQ.w2JsLB9IBkDmgLh8X4nuNPhSoN2zg2FgI-2A67tC3lE
 ```
 
-### 🌐 App Configuration (WYMAGANE)
-```
-NEXT_PUBLIC_APP_URL=https://twoja-domena.vercel.app
+### 🌐 App Configuration
+```bash
+NEXT_PUBLIC_APP_NAME=BezHandlowca
+NEXT_PUBLIC_APP_URL=https://bezhandlowca.pl
 NODE_ENV=production
 ```
 
-### 📧 Email (OPCJONALNE)
-```
+### 📧 Email Configuration (Opcjonalne)
+```bash
 SMTP_HOST=smtp.gmail.com
 SMTP_PORT=587
-SMTP_USER=twoj-email@gmail.com
-SMTP_PASS=twoje-haslo-aplikacji
+SMTP_USER=your-email@gmail.com
+SMTP_PASSWORD=your-app-password
+EMAIL_FROM=leads@bezhandlowca.pl
+EMAIL_TO=leads@bezhandlowca.pl
 ```
 
-### 📊 Google Sheets (OPCJONALNE)
-```
-GOOGLE_SHEETS_PRIVATE_KEY=-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----
-GOOGLE_SHEETS_CLIENT_EMAIL=service-account@project.iam.gserviceaccount.com
-GOOGLE_SHEETS_SPREADSHEET_ID=1234567890abcdef
-```
-
-### 📈 Analytics (OPCJONALNE)
-```
-GOOGLE_ANALYTICS_ID=G-XXXXXXXXXX
-HOTJAR_ID=1234567
-LINKEDIN_PIXEL_ID=123456
-```
-
-## 📋 Krok 3: Deploy
-
-1. Kliknij **"Deploy"**
-2. Poczekaj na zakończenie buildu (~2-3 minuty)
-3. Sprawdź czy deployment przeszedł pomyślnie
-
-## 📋 Krok 4: Konfiguracja Supabase
-
-### 4.1 Dodaj domenę Vercel do Supabase
-1. Idź do [Supabase Dashboard](https://supabase.com/dashboard/project/dchwetwqmmeqyxlcqlac)
-2. **Authentication** → **URL Configuration**
-3. Dodaj do **Site URL**: `https://twoja-domena.vercel.app`
-4. Dodaj do **Redirect URLs**: 
-   - `https://twoja-domena.vercel.app/client/login`
-   - `https://twoja-domena.vercel.app/admin/login`
-
-### 4.2 Uruchom migracje bazy danych
-1. **SQL Editor** w Supabase Dashboard
-2. Skopiuj zawartość `supabase/migrations/001_init.sql`
-3. Kliknij **"Run"**
-
-### 4.3 Wypełnij danymi testowymi
-Po deployment uruchom lokalnie:
+### 📊 Analytics (Opcjonalne)
 ```bash
-npm run seed
+NEXT_PUBLIC_ENABLE_ANALYTICS=true
+NEXT_PUBLIC_GA_MEASUREMENT_ID=G-XXXXXXXXXX
+NEXT_PUBLIC_LINKEDIN_PIXEL_ID=123456
+NEXT_PUBLIC_HOTJAR_ID=123456
+NEXT_PUBLIC_HOTJAR_VERSION=6
 ```
 
-## 🔧 Troubleshooting
+### 🔒 Security
+```bash
+FORM_SECRET_KEY=your-secret-key-here
+RATE_LIMIT_MAX=5
+RATE_LIMIT_WINDOW=900000
+```
 
-### Build Fails
-- Sprawdź czy wszystkie wymagane zmienne środowiskowe są ustawione
-- Sprawdź logi buildu w Vercel Dashboard
+## 🚀 Kroki Deployment
 
-### Fonts nie ładują się
-- To normalne podczas buildu - fonty będą działać po deployment
-- Dodaliśmy fallback fonts dla lepszej wydajności
+### 1. Przygotowanie Repozytorium
+```bash
+# Upewnij się, że wszystkie zmiany są w Git
+git add .
+git commit -m "Ready for Vercel deployment"
+git push origin main
+```
 
-### API nie działa
-- Sprawdź czy `NEXT_PUBLIC_SUPABASE_URL` i `SUPABASE_SERVICE_KEY` są ustawione
-- Sprawdź czy migracje bazy danych zostały uruchomione
+### 2. Konfiguracja Vercel
 
-### 404 na stronach
-- Sprawdź czy build przeszedł pomyślnie
-- Sprawdź routing w `next.config.js`
+1. **Zaloguj się do Vercel**: https://vercel.com
+2. **Import Project**: Kliknij "New Project" → Import z GitHub
+3. **Wybierz Repo**: `Acoste616/Handlowiec`
+4. **Framework**: Next.js (auto-detect)
+5. **Root Directory**: `./` (domyślnie)
 
-## 🎯 Po Deployment
+### 3. Ustawienie Zmiennych Środowiskowych
 
-### Testowanie
-1. **Strona główna**: `https://twoja-domena.vercel.app`
-2. **Panel klienta**: `https://twoja-domena.vercel.app/client/login`
-3. **Panel admin**: `https://twoja-domena.vercel.app/admin/login`
-4. **API Health**: `https://twoja-domena.vercel.app/api/health`
+W Vercel Dashboard:
+1. Przejdź do **Settings** → **Environment Variables**
+2. Dodaj wszystkie zmienne z sekcji powyżej
+3. Ustaw **Environment** na `Production`, `Preview`, i `Development`
 
-### Monitoring
-- **Vercel Analytics**: Automatycznie włączone
-- **Logi**: Vercel Dashboard → Functions
-- **Performance**: Vercel Dashboard → Speed Insights
+### 4. Build Settings
 
-## 🚀 Następne Kroki
+Vercel automatycznie wykryje:
+- **Build Command**: `npm run build`
+- **Output Directory**: `.next`
+- **Install Command**: `npm install`
 
-1. **Skonfiguruj domenę własną** (opcjonalnie)
-2. **Dodaj SSL certificate** (automatycznie przez Vercel)
-3. **Skonfiguruj monitoring** (Sentry, LogRocket)
-4. **Dodaj backup bazy danych** (Supabase)
+### 5. Deploy
 
----
+1. Kliknij **Deploy**
+2. Poczekaj na zakończenie buildu (~2-3 minuty)
+3. Sprawdź logi w przypadku błędów
+
+## 🗄️ Konfiguracja Bazy Danych
+
+### 1. Uruchom Migrację w Supabase
+
+1. Przejdź do **Supabase Dashboard**: https://supabase.com/dashboard
+2. Wybierz projekt: `dchwetwqmmeqyxlcqlac`
+3. Przejdź do **SQL Editor**
+4. Skopiuj i uruchom zawartość pliku: `supabase/migrations/001_init.sql`
+
+### 2. Sprawdź Tabele
+
+Powinny zostać utworzone tabele:
+- `users` - Użytkownicy systemu
+- `clients` - Klienci (firmy)
+- `leads` - Leady sprzedażowe
+- `activities` - Historia aktywności
+- `team_rotations` - Rotacje zespołu
+
+### 3. Konfiguracja Authentication
+
+1. W Supabase Dashboard → **Authentication** → **Settings**
+2. **Site URL**: Ustaw na URL Vercel (np. `https://your-app.vercel.app`)
+3. **Redirect URLs**: Dodaj:
+   - `https://your-app.vercel.app/auth/callback`
+   - `https://your-app.vercel.app/dashboard`
+
+## 🧪 Testowanie Deployment
+
+### 1. Sprawdź API Endpoints
+
+```bash
+# Test dashboard stats
+curl https://your-app.vercel.app/api/client/dashboard/stats?clientId=test
+
+# Test team rotation
+curl https://your-app.vercel.app/api/client/team/rotation?clientId=test
+```
+
+### 2. Sprawdź Frontend
+
+1. Otwórz aplikację w przeglądarce
+2. Sprawdź czy strona główna się ładuje
+3. Przetestuj formularz kontaktowy
+
+## 🌱 Dodanie Danych Testowych
+
+Po deployment uruchom seed script:
+
+```bash
+# Lokalnie (z ustawionymi zmiennymi środowiskowymi)
+npm run seed
+
+# Lub bezpośrednio w Supabase SQL Editor
+# Skopiuj zawartość z scripts/seed.ts i dostosuj do SQL
+```
+
+## 🔧 Rozwiązywanie Problemów
+
+### Build Errors
+
+1. **Supabase Connection Error**:
+   - Sprawdź czy wszystkie zmienne Supabase są ustawione
+   - Zweryfikuj klucze w Supabase Dashboard
+
+2. **ESLint Errors**:
+   - Sprawdź `.eslintrc.json`
+   - Uruchom `npm run lint` lokalnie
+
+3. **TypeScript Errors**:
+   - Uruchom `npm run type-check` lokalnie
+   - Sprawdź importy w plikach API
+
+### Runtime Errors
+
+1. **API Routes 500 Error**:
+   - Sprawdź logi w Vercel Dashboard → Functions
+   - Zweryfikuj połączenie z Supabase
+
+2. **Database Connection Issues**:
+   - Sprawdź RLS policies w Supabase
+   - Zweryfikuj service key permissions
+
+## 📊 Monitoring
+
+### Vercel Analytics
+- Automatycznie włączone dla wszystkich projektów
+- Dashboard dostępny w Vercel → Analytics
+
+### Supabase Monitoring
+- Dashboard → Settings → API
+- Sprawdzaj usage i performance
+
+## 🔄 Aktualizacje
+
+### Automatyczne Deployment
+- Każdy push do `main` branch automatycznie triggeruje deployment
+- Preview deployments dla pull requestów
+
+### Manual Redeploy
+1. Vercel Dashboard → Deployments
+2. Kliknij "Redeploy" na ostatnim deployment
 
 ## ✅ Checklist Deployment
 
-- [ ] Repozytorium połączone z Vercel
-- [ ] Zmienne środowiskowe ustawione
-- [ ] Build przeszedł pomyślnie
-- [ ] Domena dodana do Supabase
-- [ ] Migracje bazy danych uruchomione
-- [ ] Dane testowe wypełnione
-- [ ] Strona działa poprawnie
+- [ ] Wszystkie zmienne środowiskowe ustawione
+- [ ] Migracja bazy danych uruchomiona
+- [ ] Authentication URLs skonfigurowane
+- [ ] Build przechodzi bez błędów
 - [ ] API endpoints działają
-- [ ] Logowanie działa
+- [ ] Frontend ładuje się poprawnie
+- [ ] Dane testowe dodane (opcjonalne)
 
-**Status**: 🎉 **GOTOWE DO PRODUKCJI!** 
+## 🆘 Wsparcie
+
+W przypadku problemów:
+1. Sprawdź logi w Vercel Dashboard
+2. Zweryfikuj konfigurację Supabase
+3. Przetestuj lokalnie z tymi samymi zmiennymi środowiskowymi
+
+---
+
+**Status**: ✅ Gotowe do deployment
+**Czas setup**: ~10 minut
+**Wymagania**: Konto Vercel + Supabase project 

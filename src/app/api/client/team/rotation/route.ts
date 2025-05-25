@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabaseAdmin } from '@/lib/supabase/client';
+import { supabaseAdmin, isSupabaseConfigured } from '@/lib/supabase/client';
 import { z } from 'zod';
 
 const CreateRotationSchema = z.object({
@@ -15,121 +15,76 @@ const UpdateRotationSchema = z.object({
   end_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
 });
 
+// Force dynamic rendering
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+
 export async function GET(request: NextRequest) {
   try {
-    // Check if Supabase is properly configured
-    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SERVICE_KEY) {
-      return NextResponse.json(
-        { error: 'Supabase not configured' },
-        { status: 503 }
-      );
+    // Check if Supabase is configured
+    if (!isSupabaseConfigured()) {
+      console.warn('⚠️ Supabase not configured, returning mock data for build');
+      return NextResponse.json({
+        rotations: [],
+        currentRotation: null,
+        nextRotation: null
+      });
     }
 
-    const clientId = request.headers.get('x-client-id');
-    
+    const { searchParams } = new URL(request.url);
+    const clientId = searchParams.get('clientId');
+
     if (!clientId) {
       return NextResponse.json(
-        { error: 'Missing client context' },
+        { error: 'Client ID is required' },
         { status: 400 }
       );
     }
 
-    const { searchParams } = new URL(request.url);
-    const type = searchParams.get('type'); // '30_days' or '90_days'
-    const active = searchParams.get('active'); // 'true' or 'false'
-    const userId = searchParams.get('user_id');
-
-    let query = supabaseAdmin
+    // Get current and upcoming rotations
+    const { data: rotations, error } = await supabaseAdmin
       .from('team_rotations')
       .select(`
         id,
-        user_id,
         rotation_type,
         start_date,
         end_date,
         is_active,
         created_at,
-        users!team_rotations_user_id_fkey(
-          id,
-          full_name,
-          email,
-          role
-        )
+        users!team_rotations_user_id_fkey(id, full_name, email)
       `)
       .eq('client_id', clientId)
-      .order('created_at', { ascending: false });
-
-    if (type) {
-      query = query.eq('rotation_type', type);
-    }
-
-    if (active !== null) {
-      query = query.eq('is_active', active === 'true');
-    }
-
-    if (userId) {
-      query = query.eq('user_id', userId);
-    }
-
-    const { data: rotations, error } = await query;
+      .order('start_date', { ascending: false })
+      .limit(10);
 
     if (error) {
-      throw error;
+      console.error('Error fetching rotations:', error);
+      return NextResponse.json(
+        { error: 'Failed to fetch team rotations' },
+        { status: 500 }
+      );
     }
 
-    // Calculate rotation statistics
-    const stats = {
-      total: rotations?.length || 0,
-      active: rotations?.filter(r => r.is_active).length || 0,
-      by_type: {
-        '30_days': rotations?.filter(r => r.rotation_type === '30_days').length || 0,
-        '90_days': rotations?.filter(r => r.rotation_type === '90_days').length || 0,
-      },
-      upcoming_endings: rotations?.filter(r => {
-        if (!r.is_active) return false;
-        const endDate = new Date(r.end_date);
-        const now = new Date();
-        const daysUntilEnd = Math.ceil((endDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
-        return daysUntilEnd <= 7 && daysUntilEnd >= 0;
-      }).length || 0,
-    };
+    const now = new Date();
+    const currentRotation = rotations?.find(rotation => 
+      new Date(rotation.start_date) <= now && 
+      new Date(rotation.end_date) >= now &&
+      rotation.is_active
+    );
 
-    // Calculate performance metrics for active rotations
-    const activeRotations = rotations?.filter(r => r.is_active) || [];
-    const performanceData = await Promise.all(
-      activeRotations.map(async (rotation) => {
-        const { data: leads } = await supabaseAdmin
-          .from('leads')
-          .select('id, status, estimated_value, created_at')
-          .eq('client_id', clientId)
-          .eq('assigned_to', rotation.user_id)
-          .gte('created_at', rotation.start_date)
-          .lte('created_at', rotation.end_date);
-
-        const totalLeads = leads?.length || 0;
-        const closedLeads = leads?.filter(l => l.status === 'closed').length || 0;
-        const revenue = leads?.filter(l => l.status === 'closed')
-          .reduce((sum, l) => sum + (l.estimated_value || 0), 0) || 0;
-
-        return {
-          ...rotation,
-          performance: {
-            totalLeads,
-            closedLeads,
-            conversionRate: totalLeads > 0 ? (closedLeads / totalLeads) * 100 : 0,
-            revenue,
-          },
-        };
-      })
+    const nextRotation = rotations?.find(rotation => 
+      new Date(rotation.start_date) > now &&
+      rotation.is_active
     );
 
     return NextResponse.json({
-      rotations: performanceData,
-      stats,
+      rotations: rotations || [],
+      currentRotation,
+      nextRotation
     });
 
   } catch (error) {
-    console.error('Team rotation fetch error:', error);
+    console.error('Team rotation GET error:', error);
     return NextResponse.json(
       { error: 'Failed to fetch team rotations' },
       { status: 500 }
@@ -139,134 +94,119 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    // Check if Supabase is properly configured
-    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SERVICE_KEY) {
-      return NextResponse.json(
-        { error: 'Supabase not configured' },
-        { status: 503 }
-      );
+    // Check if Supabase is configured
+    if (!isSupabaseConfigured()) {
+      console.warn('⚠️ Supabase not configured, returning mock response for build');
+      return NextResponse.json({
+        success: false,
+        message: 'Service temporarily unavailable'
+      });
     }
 
-    const clientId = request.headers.get('x-client-id');
-    const userId = request.headers.get('x-user-id');
-    
-    if (!clientId || !userId) {
+    const { searchParams } = new URL(request.url);
+    const clientId = searchParams.get('clientId');
+
+    if (!clientId) {
       return NextResponse.json(
-        { error: 'Missing client context' },
+        { error: 'Client ID is required' },
         { status: 400 }
       );
     }
 
     const body = await request.json();
-    const validationResult = CreateRotationSchema.safeParse(body);
-    
-    if (!validationResult.success) {
+    const { rotation_type, user_ids } = body;
+
+    if (!rotation_type || !user_ids || !Array.isArray(user_ids)) {
       return NextResponse.json(
-        { 
-          error: 'Validation failed',
-          details: validationResult.error.errors 
-        },
+        { error: 'rotation_type and user_ids array are required' },
         { status: 400 }
       );
     }
 
-    const rotationData = validationResult.data;
-
-    // Validate dates
-    const startDate = new Date(rotationData.start_date);
-    const endDate = new Date(rotationData.end_date);
-    
-    if (endDate <= startDate) {
+    if (!['30_days', '90_days'].includes(rotation_type)) {
       return NextResponse.json(
-        { error: 'End date must be after start date' },
+        { error: 'rotation_type must be either "30_days" or "90_days"' },
         { status: 400 }
       );
     }
 
-    // Check if user belongs to the client
-    const { data: user } = await supabaseAdmin
-      .from('users')
-      .select('id, client_id')
-      .eq('id', rotationData.user_id)
-      .eq('client_id', clientId)
-      .single();
+    // Calculate rotation dates
+    const startDate = new Date();
+    const endDate = new Date();
+    const days = rotation_type === '30_days' ? 30 : 90;
+    endDate.setDate(startDate.getDate() + days);
 
-    if (!user) {
-      return NextResponse.json(
-        { error: 'User not found or does not belong to this client' },
-        { status: 404 }
-      );
-    }
-
-    // Check for overlapping rotations
-    const { data: overlapping } = await supabaseAdmin
+    // Deactivate current rotations
+    await supabaseAdmin
       .from('team_rotations')
-      .select('id')
+      .update({ is_active: false })
       .eq('client_id', clientId)
-      .eq('user_id', rotationData.user_id)
-      .eq('rotation_type', rotationData.rotation_type)
-      .eq('is_active', true)
-      .or(`start_date.lte.${rotationData.end_date},end_date.gte.${rotationData.start_date}`);
+      .eq('is_active', true);
 
-    if (overlapping && overlapping.length > 0) {
-      return NextResponse.json(
-        { error: 'User already has an active rotation of this type in the specified period' },
-        { status: 409 }
-      );
-    }
+    // Create new rotations for each user
+    const rotationsToInsert = user_ids.map(userId => ({
+      client_id: clientId,
+      user_id: userId,
+      rotation_type,
+      start_date: startDate.toISOString(),
+      end_date: endDate.toISOString(),
+      is_active: true,
+      created_at: new Date().toISOString(),
+    }));
 
-    // Create rotation
-    const { data: newRotation, error } = await supabaseAdmin
+    const { data: newRotations, error } = await supabaseAdmin
       .from('team_rotations')
-      .insert({
-        ...rotationData,
-        client_id: clientId,
-        is_active: true,
-      })
+      .insert(rotationsToInsert)
       .select(`
         id,
-        user_id,
         rotation_type,
         start_date,
         end_date,
         is_active,
-        created_at,
-        users!team_rotations_user_id_fkey(
-          id,
-          full_name,
-          email,
-          role
-        )
-      `)
-      .single();
+        users!team_rotations_user_id_fkey(id, full_name, email)
+      `);
 
     if (error) {
-      throw error;
+      console.error('Error creating rotations:', error);
+      return NextResponse.json(
+        { error: 'Failed to create team rotations' },
+        { status: 500 }
+      );
     }
 
-    // Create activity log
-    await supabaseAdmin
-      .from('activities')
-      .insert({
-        lead_id: null,
-        user_id: userId,
-        type: 'note',
-        description: `Created ${rotationData.rotation_type.replace('_', '-')} rotation for ${(newRotation.users as any)?.full_name || 'User'}`,
-        metadata: {
-          rotation_id: newRotation.id,
-          rotation_type: rotationData.rotation_type,
-          start_date: rotationData.start_date,
-          end_date: rotationData.end_date,
-        },
-      });
+    // Log activity
+    try {
+      await supabaseAdmin
+        .from('activities')
+        .insert({
+          lead_id: null,
+          user_id: null,
+          type: 'team_rotation',
+          description: `New ${rotation_type.replace('_', ' ')} team rotation created for ${user_ids.length} users`,
+          metadata: {
+            rotation_type,
+            user_count: user_ids.length,
+            start_date: startDate.toISOString(),
+            end_date: endDate.toISOString(),
+            client_id: clientId
+          },
+          created_at: new Date().toISOString(),
+        });
+    } catch (activityError) {
+      console.error('Failed to log rotation activity:', activityError);
+    }
 
     return NextResponse.json({
       success: true,
-      rotation: newRotation,
+      message: `Team rotation created successfully`,
+      rotations: newRotations,
+      rotation_type,
+      start_date: startDate.toISOString(),
+      end_date: endDate.toISOString(),
     });
 
   } catch (error) {
-    console.error('Team rotation creation error:', error);
+    console.error('Team rotation POST error:', error);
     return NextResponse.json(
       { error: 'Failed to create team rotation' },
       { status: 500 }
