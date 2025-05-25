@@ -45,10 +45,6 @@ export const config = {
     },
   },
   
-  monitoring: {
-    sentryDsn: process.env.SENTRY_DSN || '',
-  },
-  
   features: {
     enableAnalytics: process.env.NEXT_PUBLIC_ENABLE_ANALYTICS === 'true',
     enableHotjar: process.env.NEXT_PUBLIC_ENABLE_HOTJAR === 'true',
