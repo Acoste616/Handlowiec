@@ -3,6 +3,14 @@ import { supabaseAdmin } from '@/lib/supabase/client';
 
 export async function GET(request: NextRequest) {
   try {
+    // Check if Supabase is properly configured
+    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SERVICE_KEY) {
+      return NextResponse.json(
+        { error: 'Supabase not configured' },
+        { status: 503 }
+      );
+    }
+
     // Get client context from middleware
     const clientId = request.headers.get('x-client-id');
     const userId = request.headers.get('x-user-id');

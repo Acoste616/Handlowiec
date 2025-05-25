@@ -17,6 +17,14 @@ const UpdateRotationSchema = z.object({
 
 export async function GET(request: NextRequest) {
   try {
+    // Check if Supabase is properly configured
+    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SERVICE_KEY) {
+      return NextResponse.json(
+        { error: 'Supabase not configured' },
+        { status: 503 }
+      );
+    }
+
     const clientId = request.headers.get('x-client-id');
     
     if (!clientId) {
@@ -131,6 +139,14 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    // Check if Supabase is properly configured
+    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SERVICE_KEY) {
+      return NextResponse.json(
+        { error: 'Supabase not configured' },
+        { status: 503 }
+      );
+    }
+
     const clientId = request.headers.get('x-client-id');
     const userId = request.headers.get('x-user-id');
     
@@ -260,6 +276,14 @@ export async function POST(request: NextRequest) {
 
 export async function PATCH(request: NextRequest) {
   try {
+    // Check if Supabase is properly configured
+    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SERVICE_KEY) {
+      return NextResponse.json(
+        { error: 'Supabase not configured' },
+        { status: 503 }
+      );
+    }
+
     const clientId = request.headers.get('x-client-id');
     const userId = request.headers.get('x-user-id');
     
@@ -357,6 +381,14 @@ export async function PATCH(request: NextRequest) {
 // Calculate optimal rotation schedule
 export async function PUT(request: NextRequest) {
   try {
+    // Check if Supabase is properly configured
+    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SERVICE_KEY) {
+      return NextResponse.json(
+        { error: 'Supabase not configured' },
+        { status: 503 }
+      );
+    }
+
     const clientId = request.headers.get('x-client-id');
     
     if (!clientId) {
