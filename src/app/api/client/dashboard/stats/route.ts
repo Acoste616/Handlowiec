@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabaseAdmin, isSupabaseConfigured } from '@/lib/supabase/client';
+import { getSupabaseAdmin, isSupabaseConfigured } from '@/lib/supabase/client';
 
 // Force dynamic rendering
 export const dynamic = 'force-dynamic';
@@ -10,6 +10,19 @@ export async function GET(request: NextRequest) {
     // Check if Supabase is configured
     if (!isSupabaseConfigured()) {
       console.warn('⚠️ Supabase not configured, returning mock data for build');
+      return NextResponse.json({
+        totalLeads: 0,
+        activeLeads: 0,
+        convertedLeads: 0,
+        conversionRate: 0,
+        recentActivities: [],
+        teamPerformance: [],
+        monthlyStats: []
+      });
+    }
+
+    const supabaseAdmin = getSupabaseAdmin();
+    if (!supabaseAdmin) {
       return NextResponse.json({
         totalLeads: 0,
         activeLeads: 0,
@@ -82,7 +95,7 @@ export async function GET(request: NextRequest) {
       .eq('role', 'sales_rep');
 
     // Process team performance data
-    const processedTeamPerformance = teamPerformance?.map(user => {
+    const processedTeamPerformance = teamPerformance?.map((user: any) => {
       const userLeads = user.leads || [];
       const totalAssigned = userLeads.length;
       const converted = userLeads.filter((lead: any) => lead.status === 'converted').length;
@@ -115,13 +128,13 @@ export async function GET(request: NextRequest) {
       const monthStart = new Date(date.getFullYear(), date.getMonth(), 1);
       const monthEnd = new Date(date.getFullYear(), date.getMonth() + 1, 0);
 
-      const monthLeads = monthlyLeads?.filter(lead => {
+      const monthLeads = monthlyLeads?.filter((lead: any) => {
         const leadDate = new Date(lead.created_at);
         return leadDate >= monthStart && leadDate <= monthEnd;
       }) || [];
 
       const totalMonth = monthLeads.length;
-      const convertedMonth = monthLeads.filter(lead => lead.status === 'converted').length;
+      const convertedMonth = monthLeads.filter((lead: any) => lead.status === 'converted').length;
 
       monthlyStats.push({
         month: date.toLocaleDateString('pl-PL', { month: 'short', year: 'numeric' }),

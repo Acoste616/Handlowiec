@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabaseAdmin, isSupabaseConfigured } from '@/lib/supabase/client';
+import { getSupabaseAdmin, isSupabaseConfigured } from '@/lib/supabase/client';
 import { z } from 'zod';
 
 const CreateRotationSchema = z.object({
@@ -24,6 +24,15 @@ export async function GET(request: NextRequest) {
     // Check if Supabase is configured
     if (!isSupabaseConfigured()) {
       console.warn('⚠️ Supabase not configured, returning mock data for build');
+      return NextResponse.json({
+        rotations: [],
+        currentRotation: null,
+        nextRotation: null
+      });
+    }
+
+    const supabaseAdmin = getSupabaseAdmin();
+    if (!supabaseAdmin) {
       return NextResponse.json({
         rotations: [],
         currentRotation: null,
@@ -66,13 +75,13 @@ export async function GET(request: NextRequest) {
     }
 
     const now = new Date();
-    const currentRotation = rotations?.find(rotation => 
+    const currentRotation = rotations?.find((rotation: any) => 
       new Date(rotation.start_date) <= now && 
       new Date(rotation.end_date) >= now &&
       rotation.is_active
     );
 
-    const nextRotation = rotations?.find(rotation => 
+    const nextRotation = rotations?.find((rotation: any) => 
       new Date(rotation.start_date) > now &&
       rotation.is_active
     );
@@ -97,6 +106,14 @@ export async function POST(request: NextRequest) {
     // Check if Supabase is configured
     if (!isSupabaseConfigured()) {
       console.warn('⚠️ Supabase not configured, returning mock response for build');
+      return NextResponse.json({
+        success: false,
+        message: 'Service temporarily unavailable'
+      });
+    }
+
+    const supabaseAdmin = getSupabaseAdmin();
+    if (!supabaseAdmin) {
       return NextResponse.json({
         success: false,
         message: 'Service temporarily unavailable'
@@ -250,7 +267,7 @@ export async function PATCH(request: NextRequest) {
     const { id, ...updateData } = validationResult.data;
 
     // Verify rotation belongs to client
-    const { data: existingRotation } = await supabaseAdmin
+    const { data: existingRotation } = await getSupabaseAdmin()
       .from('team_rotations')
       .select('id, client_id, user_id, rotation_type')
       .eq('id', id)
@@ -265,7 +282,7 @@ export async function PATCH(request: NextRequest) {
     }
 
     // Update rotation
-    const { data: updatedRotation, error } = await supabaseAdmin
+    const { data: updatedRotation, error } = await getSupabaseAdmin()
       .from('team_rotations')
       .update(updateData)
       .eq('id', id)
@@ -291,7 +308,7 @@ export async function PATCH(request: NextRequest) {
     }
 
     // Create activity log
-    await supabaseAdmin
+    await getSupabaseAdmin()
       .from('activities')
       .insert({
         lead_id: null,
@@ -349,7 +366,7 @@ export async function PUT(request: NextRequest) {
     }
 
     // Get all agents for this client
-    const { data: agents } = await supabaseAdmin
+    const { data: agents } = await getSupabaseAdmin()
       .from('users')
       .select('id, full_name, email')
       .eq('client_id', clientId)
@@ -363,7 +380,7 @@ export async function PUT(request: NextRequest) {
     }
 
     // Get current active rotations
-    const { data: activeRotations } = await supabaseAdmin
+    const { data: activeRotations } = await getSupabaseAdmin()
       .from('team_rotations')
       .select('user_id, end_date')
       .eq('client_id', clientId)
@@ -374,9 +391,9 @@ export async function PUT(request: NextRequest) {
     const now = new Date();
     
     // Calculate optimal schedule
-    const schedule = agents.map((agent, index) => {
+    const schedule = agents.map((agent: any, index: number) => {
       // Check if agent has active rotation
-      const activeRotation = activeRotations?.find(r => r.user_id === agent.id);
+      const activeRotation = activeRotations?.find((r: any) => r.user_id === agent.id);
       
       let startDate: Date;
       

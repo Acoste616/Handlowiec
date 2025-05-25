@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabaseAdmin, isSupabaseConfigured } from '@/lib/supabase/client';
+import { getSupabaseAdmin, isSupabaseConfigured } from '@/lib/supabase/client';
 import { ImportLeadsSchema, CreateLeadSchema } from '@/lib/validations/lead.schema';
 import { z } from 'zod';
 
@@ -62,6 +62,16 @@ export async function POST(request: NextRequest) {
     // Check if Supabase is configured
     if (!isSupabaseConfigured()) {
       console.warn('⚠️ Supabase not configured, returning mock response for build');
+      return NextResponse.json({
+        success: false,
+        message: 'Service temporarily unavailable',
+        imported: 0,
+        errors: []
+      });
+    }
+
+    const supabaseAdmin = getSupabaseAdmin();
+    if (!supabaseAdmin) {
       return NextResponse.json({
         success: false,
         message: 'Service temporarily unavailable',

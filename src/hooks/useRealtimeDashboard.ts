@@ -37,7 +37,7 @@ export function useRealtimeDashboard(clientId?: string) {
               table: 'leads',
               filter: `client_id=eq.${clientId}`,
             },
-            (payload) => {
+            (payload: any) => {
               console.log('Leads change detected:', payload);
               
               // Invalidate dashboard stats to trigger refetch
@@ -64,7 +64,7 @@ export function useRealtimeDashboard(clientId?: string) {
               table: 'activities',
               filter: `lead_id=in.(${await getClientLeadIds(clientId)})`,
             },
-            (payload) => {
+            (payload: any) => {
               console.log('Activity change detected:', payload);
               
               // Invalidate dashboard stats and activities
@@ -82,7 +82,7 @@ export function useRealtimeDashboard(clientId?: string) {
               table: 'team_rotations',
               filter: `client_id=eq.${clientId}`,
             },
-            (payload) => {
+            (payload: any) => {
               console.log('Team rotation change detected:', payload);
               
               // Invalidate team-related queries
@@ -92,7 +92,7 @@ export function useRealtimeDashboard(clientId?: string) {
               setStatus(prev => ({ ...prev, lastUpdate: new Date() }));
             }
           )
-          .subscribe((status) => {
+          .subscribe((status: any) => {
             console.log('Realtime subscription status:', status);
             
             setStatus(prev => ({
@@ -133,7 +133,7 @@ async function getClientLeadIds(clientId: string): Promise<string> {
       .eq('client_id', clientId)
       .limit(1000); // Reasonable limit for filter
 
-    return leads?.map(lead => lead.id).join(',') || '';
+    return leads?.map((lead: any) => lead.id).join(',') || '';
   } catch (error) {
     console.error('Failed to get client lead IDs:', error);
     return '';
@@ -162,7 +162,7 @@ export function useRealtimeLeads(clientId?: string) {
           table: 'leads',
           filter: `client_id=eq.${clientId}`,
         },
-        (payload) => {
+        (payload: any) => {
           // Invalidate leads list
           queryClient.invalidateQueries({ queryKey: ['leads', clientId] });
           
@@ -176,7 +176,7 @@ export function useRealtimeLeads(clientId?: string) {
           setStatus(prev => ({ ...prev, lastUpdate: new Date() }));
         }
       )
-      .subscribe((status) => {
+      .subscribe((status: any) => {
         setStatus(prev => ({
           ...prev,
           isConnected: status === 'SUBSCRIBED',
@@ -214,14 +214,14 @@ export function useRealtimeActivities(leadId?: string) {
           table: 'activities',
           filter: `lead_id=eq.${leadId}`,
         },
-        (payload) => {
+        (payload: any) => {
           // Invalidate activities for this lead
           queryClient.invalidateQueries({ queryKey: ['activities', leadId] });
           
           setStatus(prev => ({ ...prev, lastUpdate: new Date() }));
         }
       )
-      .subscribe((status) => {
+      .subscribe((status: any) => {
         setStatus(prev => ({
           ...prev,
           isConnected: status === 'SUBSCRIBED',
