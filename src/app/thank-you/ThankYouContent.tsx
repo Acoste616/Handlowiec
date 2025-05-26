@@ -1,10 +1,14 @@
 'use client';
 
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
+import { Suspense } from 'react';
 import { getEstimatedResponseTime } from '@/utils';
 import { callPhone, sendEmail } from '@/lib/scroll';
 
-export default function ThankYouContent() {
+function ThankYouContentInner() {
+  const searchParams = useSearchParams();
+  const isQualified = searchParams.get('qualified') === 'true';
   const estimatedResponseTime = getEstimatedResponseTime();
   
   return (
@@ -29,13 +33,25 @@ export default function ThankYouContent() {
 
         {/* Main Message */}
         <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-          Dziękujemy za zgłoszenie!
+          {isQualified ? 'Gratulacje! Kwalifikacja zakończona!' : 'Dziękujemy za zgłoszenie!'}
         </h1>
         
         <p className="text-xl text-gray-600 mb-8">
-          Twoja wiadomość została wysłana pomyślnie. 
-          <br />
-          Nasz zespół skontaktuje się z Tobą <strong>{estimatedResponseTime}</strong>.
+          {isQualified ? (
+            <>
+              Dzięki szczegółowym informacjom będziemy mogli przygotować dla Ciebie 
+              <br />
+              <strong>spersonalizowaną propozycję współpracy</strong>.
+              <br />
+              Nasz ekspert skontaktuje się z Tobą <strong>w ciągu 24 godzin</strong>.
+            </>
+          ) : (
+            <>
+              Twoja wiadomość została wysłana pomyślnie. 
+              <br />
+              Nasz zespół skontaktuje się z Tobą <strong>{estimatedResponseTime}</strong>.
+            </>
+          )}
         </p>
 
         {/* What happens next */}
@@ -44,30 +60,61 @@ export default function ThankYouContent() {
             Co dalej?
           </h2>
           <ul className="space-y-3 text-gray-600">
-            <li className="flex items-start">
-              <span className="flex-shrink-0 w-6 h-6 bg-primary-100 rounded-full flex items-center justify-center text-primary-600 text-sm font-medium mr-3 mt-0.5">
-                1
-              </span>
-              <span>
-                Sprawdzamy Twoje zgłoszenie i przygotowujemy analizę potrzeb
-              </span>
-            </li>
-            <li className="flex items-start">
-              <span className="flex-shrink-0 w-6 h-6 bg-primary-100 rounded-full flex items-center justify-center text-primary-600 text-sm font-medium mr-3 mt-0.5">
-                2
-              </span>
-              <span>
-                Dzwonimy lub wysyłamy email z propozycją terminu rozmowy
-              </span>
-            </li>
-            <li className="flex items-start">
-              <span className="flex-shrink-0 w-6 h-6 bg-primary-100 rounded-full flex items-center justify-center text-primary-600 text-sm font-medium mr-3 mt-0.5">
-                3
-              </span>
-              <span>
-                Omawiamy Twoje potrzeby i przedstawiamy dedicated propozycję
-              </span>
-            </li>
+            {isQualified ? (
+              <>
+                <li className="flex items-start">
+                  <span className="flex-shrink-0 w-6 h-6 bg-green-100 rounded-full flex items-center justify-center text-green-600 text-sm font-medium mr-3 mt-0.5">
+                    1
+                  </span>
+                  <span>
+                    Analizujemy Twoje odpowiedzi i przygotowujemy dedykowaną strategię
+                  </span>
+                </li>
+                <li className="flex items-start">
+                  <span className="flex-shrink-0 w-6 h-6 bg-green-100 rounded-full flex items-center justify-center text-green-600 text-sm font-medium mr-3 mt-0.5">
+                    2
+                  </span>
+                  <span>
+                    Nasz ekspert dzwoni z konkretnym planem działania i ofertą
+                  </span>
+                </li>
+                <li className="flex items-start">
+                  <span className="flex-shrink-0 w-6 h-6 bg-green-100 rounded-full flex items-center justify-center text-green-600 text-sm font-medium mr-3 mt-0.5">
+                    3
+                  </span>
+                  <span>
+                    Omawiamy szczegóły współpracy i rozpoczynamy realizację
+                  </span>
+                </li>
+              </>
+            ) : (
+              <>
+                <li className="flex items-start">
+                  <span className="flex-shrink-0 w-6 h-6 bg-primary-100 rounded-full flex items-center justify-center text-primary-600 text-sm font-medium mr-3 mt-0.5">
+                    1
+                  </span>
+                  <span>
+                    Sprawdzamy Twoje zgłoszenie i przygotowujemy analizę potrzeb
+                  </span>
+                </li>
+                <li className="flex items-start">
+                  <span className="flex-shrink-0 w-6 h-6 bg-primary-100 rounded-full flex items-center justify-center text-primary-600 text-sm font-medium mr-3 mt-0.5">
+                    2
+                  </span>
+                  <span>
+                    Dzwonimy lub wysyłamy email z propozycją terminu rozmowy
+                  </span>
+                </li>
+                <li className="flex items-start">
+                  <span className="flex-shrink-0 w-6 h-6 bg-primary-100 rounded-full flex items-center justify-center text-primary-600 text-sm font-medium mr-3 mt-0.5">
+                    3
+                  </span>
+                  <span>
+                    Omawiamy Twoje potrzeby i przedstawiamy dedicated propozycję
+                  </span>
+                </li>
+              </>
+            )}
           </ul>
         </div>
 
@@ -119,5 +166,20 @@ export default function ThankYouContent() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function ThankYouContent() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gradient-to-br from-primary-50 to-primary-100 flex items-center justify-center px-4">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Ładowanie strony...</p>
+        </div>
+      </div>
+    }>
+      <ThankYouContentInner />
+    </Suspense>
   );
 } 

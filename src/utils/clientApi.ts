@@ -19,8 +19,16 @@ class ClientApiClient {
     const url = `${this.baseUrl}${endpoint}`;
     
     // Get client session info
-    const clientUser = localStorage.getItem('client_user');
-    const clientData = clientUser ? JSON.parse(clientUser) : null;
+    let clientData = null;
+    try {
+      if (typeof window !== 'undefined') {
+        const clientUser = localStorage.getItem('client_user');
+        clientData = clientUser ? JSON.parse(clientUser) : null;
+      }
+    } catch (error) {
+      console.error('Error reading client session:', error);
+      clientData = null;
+    }
     
     const defaultHeaders: HeadersInit = {
       'Content-Type': 'application/json',
@@ -46,9 +54,15 @@ class ClientApiClient {
       if (!response.ok) {
         if (response.status === 401) {
           // Unauthorized - redirect to login
-          localStorage.removeItem('client_user');
-          localStorage.removeItem('client_session_expiry');
-          window.location.href = '/client/login';
+          try {
+            if (typeof window !== 'undefined') {
+              localStorage.removeItem('client_user');
+              localStorage.removeItem('client_session_expiry');
+              window.location.href = '/client/login';
+            }
+          } catch (error) {
+            console.error('Error during session cleanup:', error);
+          }
           throw new Error('Session expired');
         }
         

@@ -76,6 +76,12 @@ export function ClientAuthProvider({ children }: { children: ReactNode }) {
     // Check for existing session on mount
     const checkAuth = () => {
       try {
+        // Check if we're in browser environment
+        if (typeof window === 'undefined') {
+          setIsLoading(false);
+          return;
+        }
+
         const storedUser = localStorage.getItem('client_user');
         const storedExpiry = localStorage.getItem('client_session_expiry');
         
@@ -84,7 +90,8 @@ export function ClientAuthProvider({ children }: { children: ReactNode }) {
           const now = new Date();
           
           if (now < expiryDate) {
-            setUser(JSON.parse(storedUser));
+            const parsedUser = JSON.parse(storedUser);
+            setUser(parsedUser);
           } else {
             // Session expired
             localStorage.removeItem('client_user');
@@ -93,8 +100,13 @@ export function ClientAuthProvider({ children }: { children: ReactNode }) {
         }
       } catch (error) {
         console.error('Error checking client auth:', error);
-        localStorage.removeItem('client_user');
-        localStorage.removeItem('client_session_expiry');
+        // Clear potentially corrupted data
+        try {
+          localStorage.removeItem('client_user');
+          localStorage.removeItem('client_session_expiry');
+        } catch (clearError) {
+          console.error('Error clearing localStorage:', clearError);
+        }
       } finally {
         setIsLoading(false);
       }
@@ -138,8 +150,14 @@ export function ClientAuthProvider({ children }: { children: ReactNode }) {
 
   const logout = () => {
     setUser(null);
-    localStorage.removeItem('client_user');
-    localStorage.removeItem('client_session_expiry');
+    try {
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('client_user');
+        localStorage.removeItem('client_session_expiry');
+      }
+    } catch (error) {
+      console.error('Error during logout:', error);
+    }
   };
 
   const value: ClientAuthContextType = {

@@ -26,7 +26,15 @@ export default function ClientDashboardLayout({
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
-      router.push('/client/login');
+      try {
+        router.push('/client/login');
+      } catch (error) {
+        console.error('Error redirecting to login:', error);
+        // Fallback redirect
+        if (typeof window !== 'undefined') {
+          window.location.href = '/client/login';
+        }
+      }
     }
   }, [isAuthenticated, isLoading, router]);
 

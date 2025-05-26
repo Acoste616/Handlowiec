@@ -1,5 +1,5 @@
 import nodemailer from 'nodemailer';
-import { config } from '@/lib/config';
+import { config } from '@/config/index';
 import { formatTimestamp, getEstimatedResponseTime } from '@/lib/utils';
 import type { LeadFormData } from '@/types/form';
 
@@ -10,10 +10,10 @@ export class EmailService {
     this.transporter = nodemailer.createTransport({
       host: config.email.host,
       port: config.email.port,
-      secure: config.email.secure,
+      secure: config.email.port === 465, // Use secure for port 465
       auth: {
-        user: config.email.auth.user,
-        pass: config.email.auth.pass,
+        user: config.email.user,
+        pass: config.email.password,
       },
       tls: {
         rejectUnauthorized: false,
@@ -71,6 +71,31 @@ export class EmailService {
     } catch (error) {
       console.error('Error sending confirmation email:', error);
       // Don't throw here as this is not critical for the lead submission
+    }
+  }
+
+  /**
+   * Send case study email to the lead
+   */
+  async sendCaseStudy(formData: LeadFormData): Promise<void> {
+    const subject = '📊 Twoje case study: 6× więcej leadów w 90 dni - BezHandlowca.pl';
+    
+    const html = this.generateCaseStudyHTML(formData);
+    const text = this.generateCaseStudyText(formData);
+
+    try {
+      await this.transporter.sendMail({
+        from: `"Bartek z BezHandlowca.pl" <${config.email.from}>`,
+        to: formData.email,
+        subject,
+        html,
+        text,
+        replyTo: config.email.from,
+        priority: 'high',
+      });
+    } catch (error) {
+      console.error('Error sending case study email:', error);
+      throw new Error('Failed to send case study email');
     }
   }
 
@@ -334,6 +359,166 @@ bartek@bezhandlowca.pl
 BezHandlowca Sp. z o.o.
 ul. Przykładowa 123, 00-001 Warszawa
 NIP: 123-456-78-90
+    `.trim();
+  }
+
+  /**
+   * Generate HTML for case study email
+   */
+  private generateCaseStudyHTML(formData: LeadFormData): string {
+    const caseStudyUrl = `${process.env.NEXT_PUBLIC_SITE_URL || 'https://bezhandlowca.pl'}/downloads/case-study-6x-wiecej-leadow.html`;
+    
+    return `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Twoje case study - BezHandlowca.pl</title>
+        <style>
+          body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; }
+          .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+          .header { background: linear-gradient(135deg, #004aa3 0%, #f97316 100%); color: white; padding: 30px; border-radius: 10px 10px 0 0; text-align: center; }
+          .content { background: #f9fafb; padding: 30px; border-radius: 0 0 10px 10px; }
+          .highlight { background: #fef3c7; padding: 20px; border-radius: 8px; border-left: 4px solid #f97316; margin: 20px 0; }
+          .case-study-box { background: white; padding: 25px; border-radius: 8px; margin: 20px 0; border: 2px solid #10b981; }
+          .stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin: 20px 0; }
+          .stat { text-align: center; padding: 15px; background: #f3f4f6; border-radius: 6px; }
+          .stat-number { font-size: 24px; font-weight: bold; color: #10b981; display: block; }
+          .btn { display: inline-block; background: #10b981; color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: 600; margin: 10px 0; }
+          .footer { text-align: center; padding: 20px; font-size: 14px; color: #6b7280; }
+          .next-steps { background: #e0f2fe; padding: 20px; border-radius: 8px; margin: 20px 0; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header">
+            <h1>📊 Twoje case study jest gotowe!</h1>
+            <p>Cześć ${formData.firstName}, jak obiecaliśmy - oto konkretne liczby</p>
+          </div>
+          
+          <div class="content">
+            <div class="case-study-box">
+              <h2>🎯 Case Study: 6× więcej leadów w 90 dni</h2>
+              <p><strong>Jak firma IT TechFlow zwiększyła liczbę leadów z 20 do 120/miesiąc</strong></p>
+              
+              <div class="stats">
+                <div class="stat">
+                  <span class="stat-number">6×</span>
+                  <div>Więcej leadów</div>
+                </div>
+                <div class="stat">
+                  <span class="stat-number">90</span>
+                  <div>Dni implementacji</div>
+                </div>
+                <div class="stat">
+                  <span class="stat-number">45%</span>
+                  <div>Redukcja kosztów</div>
+                </div>
+                <div class="stat">
+                  <span class="stat-number">320%</span>
+                  <div>ROI w 6 miesięcy</div>
+                </div>
+              </div>
+              
+              <div style="text-align: center; margin: 25px 0;">
+                <a href="${caseStudyUrl}" class="btn">📥 Pobierz pełne case study</a>
+              </div>
+              
+              <p><strong>Co znajdziesz w case study:</strong></p>
+              <ul>
+                <li>✅ Dokładny 90-dniowy plan implementacji</li>
+                <li>✅ Konkretne narzędzia i ich koszty</li>
+                <li>✅ Strategie dla każdego kanału pozyskiwania</li>
+                <li>✅ Błędy, których należy unikać</li>
+                <li>✅ Szczegółową analizę ROI</li>
+              </ul>
+            </div>
+            
+            <div class="highlight">
+              <h3>💡 Czy podobne rezultaty są możliwe w ${formData.company}?</h3>
+              <p>Każda firma jest inna, ale zasady pozostają te same. Jeśli chcesz omówić, jak zastosować te strategie w Twojej branży, umów się na bezpłatną 15-minutową konsultację.</p>
+            </div>
+            
+            <div class="next-steps">
+              <h3>🚀 Następne kroki</h3>
+              <p>Po przeczytaniu case study, jeśli chcesz omówić implementację w ${formData.company}:</p>
+              <ol>
+                <li>Przeczytaj case study (5-10 minut)</li>
+                <li>Zastanów się nad swoimi celami</li>
+                <li>Umów się na bezpłatną konsultację</li>
+              </ol>
+              
+              <div style="text-align: center; margin: 20px 0;">
+                <a href="https://bezhandlowca.pl/kontakt" class="btn">📞 Umów konsultację</a>
+              </div>
+            </div>
+            
+            <div class="footer">
+              <p>
+                <strong>Bartek Kowalski</strong><br>
+                Założyciel BezHandlowca.pl<br>
+                📧 bartek@bezhandlowca.pl<br>
+                📞 +48 123 456 789
+              </p>
+              
+              <p style="margin-top: 15px; font-size: 12px;">
+                PS: Case study zostało przygotowane na podstawie rzeczywistego projektu.<br>
+                Wszystkie liczby są prawdziwe, zmieniliśmy tylko nazwę firmy.
+              </p>
+            </div>
+          </div>
+        </div>
+      </body>
+      </html>
+    `;
+  }
+
+  /**
+   * Generate text version for case study email
+   */
+  private generateCaseStudyText(formData: LeadFormData): string {
+    const caseStudyUrl = `${process.env.NEXT_PUBLIC_SITE_URL || 'https://bezhandlowca.pl'}/downloads/case-study-6x-wiecej-leadow.html`;
+    
+    return `
+📊 Twoje case study jest gotowe!
+
+Cześć ${formData.firstName},
+
+Jak obiecaliśmy - oto konkretne liczby i strategie, które pomogły firmie IT zwiększyć liczbę leadów z 20 do 120/miesiąc w 90 dni.
+
+GŁÓWNE REZULTATY:
+✅ 6× więcej leadów
+✅ 90 dni implementacji  
+✅ 45% redukcja kosztów
+✅ 320% ROI w 6 miesięcy
+
+POBIERZ CASE STUDY:
+${caseStudyUrl}
+
+CO ZNAJDZIESZ W CASE STUDY:
+- Dokładny 90-dniowy plan implementacji
+- Konkretne narzędzia i ich koszty
+- Strategie dla każdego kanału pozyskiwania
+- Błędy, których należy unikać
+- Szczegółową analizę ROI
+
+CZY PODOBNE REZULTATY SĄ MOŻLIWE W ${formData.company.toUpperCase()}?
+
+Każda firma jest inna, ale zasady pozostają te same. Jeśli chcesz omówić, jak zastosować te strategie w Twojej branży, umów się na bezpłatną 15-minutową konsultację.
+
+NASTĘPNE KROKI:
+1. Przeczytaj case study (5-10 minut)
+2. Zastanów się nad swoimi celami  
+3. Umów się na bezpłatną konsultację: https://bezhandlowca.pl/kontakt
+
+---
+Bartek Kowalski
+Założyciel BezHandlowca.pl
+bartek@bezhandlowca.pl
++48 123 456 789
+
+PS: Case study zostało przygotowane na podstawie rzeczywistego projektu. Wszystkie liczby są prawdziwe, zmieniliśmy tylko nazwę firmy.
     `.trim();
   }
 

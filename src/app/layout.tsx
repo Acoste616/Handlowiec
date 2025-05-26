@@ -1,10 +1,7 @@
 import type { Metadata } from 'next';
 import { Inter, Poppins } from 'next/font/google';
 import { Analytics } from '@vercel/analytics/react';
-import { GoogleAnalytics } from '@/components/analytics/GoogleAnalytics';
-import { LinkedInPixel } from '@/components/analytics/LinkedInPixel';
-import { Hotjar } from '@/components/analytics/Hotjar';
-import { config } from '@/lib/config';
+import { config } from '@/config/index';
 import './globals.css';
 
 const inter = Inter({
@@ -110,17 +107,9 @@ export const metadata: Metadata = {
   // Technical
   manifest: '/manifest.json',
   icons: {
-    icon: [
-      { url: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
-      { url: '/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
-    ],
-    apple: [
-      { url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
-    ],
-    other: [
-      { url: '/android-chrome-192x192.png', sizes: '192x192', type: 'image/png' },
-      { url: '/android-chrome-512x512.png', sizes: '512x512', type: 'image/png' },
-    ],
+    icon: '/favicon.svg',
+    shortcut: '/favicon.svg',
+    apple: '/favicon.svg',
   },
   
   // Verification
@@ -167,7 +156,8 @@ export default function RootLayout({
           {children}
         </div>
         
-        {/* Analytics and tracking */}
+        {/* Analytics and tracking - disabled to prevent hydration errors */}
+        {/* 
         {config.features.enableAnalytics && config.analytics.gaId && (
           <GoogleAnalytics measurementId={config.analytics.gaId} />
         )}
@@ -182,12 +172,13 @@ export default function RootLayout({
             version={config.analytics.hotjarVersion} 
           />
         )}
+        */}
         
         {/* Vercel Analytics */}
         <Analytics />
         
         {/* Performance optimization */}
-        {config.app.isProduction && (
+        {config.isProduction && (
           <>
             {/* Resource hints */}
             <link rel="prefetch" href="/images/hero-bg.jpg" />

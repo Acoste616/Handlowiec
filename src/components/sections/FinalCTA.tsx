@@ -192,7 +192,7 @@ export default function FinalCTA() {
                   value={formData.firstName}
                   onChange={handleInputChange}
                   required
-                  className="w-full px-4 py-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-lg"
+                  className="w-full px-4 py-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-lg text-black"
                   disabled={isSubmitting}
                 />
               </div>
@@ -205,7 +205,7 @@ export default function FinalCTA() {
                   value={formData.company}
                   onChange={handleInputChange}
                   required
-                  className="w-full px-4 py-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-lg"
+                  className="w-full px-4 py-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-lg text-black"
                   disabled={isSubmitting}
                 />
               </div>
@@ -218,7 +218,7 @@ export default function FinalCTA() {
                   value={formData.email}
                   onChange={handleInputChange}
                   required
-                  className="w-full px-4 py-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-lg"
+                  className="w-full px-4 py-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-lg text-black"
                   disabled={isSubmitting}
                 />
               </div>
@@ -231,7 +231,7 @@ export default function FinalCTA() {
                   value={formData.phone}
                   onChange={handleInputChange}
                   required
-                  className="w-full px-4 py-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-lg"
+                  className="w-full px-4 py-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-lg text-black"
                   disabled={isSubmitting}
                 />
               </div>
@@ -243,7 +243,7 @@ export default function FinalCTA() {
                   value={formData.message}
                   onChange={handleInputChange}
                   rows={3}
-                  className="w-full px-4 py-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-lg"
+                  className="w-full px-4 py-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-lg text-black"
                   disabled={isSubmitting}
                 />
               </div>

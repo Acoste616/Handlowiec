@@ -18,10 +18,44 @@ export default function CaseStudyLeadMagnet() {
   const [error, setError] = useState('');
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData(prev => ({
-      ...prev,
-      [e.target.name]: e.target.value
-    }));
+    const { name, value } = e.target;
+    
+    // Format phone number as user types
+    if (name === 'phone') {
+      // Remove all non-digits
+      const digits = value.replace(/\D/g, '');
+      
+      // Format as Polish phone number
+      let formatted = '';
+      if (digits.length > 0) {
+        if (digits.startsWith('48')) {
+          // Already has country code
+          formatted = '+48 ' + digits.slice(2).replace(/(\d{3})(\d{3})(\d{3})/, '$1 $2 $3').trim();
+        } else if (digits.length <= 9) {
+          // Domestic format
+          formatted = digits.replace(/(\d{3})(\d{3})(\d{3})/, '$1 $2 $3').trim();
+        } else {
+          // Add +48 prefix
+          formatted = '+48 ' + digits.slice(-9).replace(/(\d{3})(\d{3})(\d{3})/, '$1 $2 $3').trim();
+        }
+      }
+      
+      setFormData(prev => ({
+        ...prev,
+        [name]: formatted
+      }));
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        [name]: value
+      }));
+    }
+  };
+
+  const validatePhone = (phone: string): boolean => {
+    // Polish phone validation regex
+    const polishPhoneRegex = /^(\+48)?[\s\-]?[0-9]{3}[\s\-]?[0-9]{3}[\s\-]?[0-9]{3}$/;
+    return polishPhoneRegex.test(phone);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -29,21 +63,33 @@ export default function CaseStudyLeadMagnet() {
     setIsSubmitting(true);
     setError('');
 
-    // Basic validation
-    if (!formData.firstName.trim()) {
-      setError('Imię jest wymagane');
+    // Enhanced validation
+    if (!formData.firstName.trim() || formData.firstName.length < 2) {
+      setError('Imię musi mieć minimum 2 znaki');
       setIsSubmitting(false);
       return;
     }
 
-    if (!formData.email.trim()) {
-      setError('Email jest wymagany');
+    if (!formData.company.trim() || formData.company.length < 2) {
+      setError('Nazwa firmy musi mieć minimum 2 znaki');
+      setIsSubmitting(false);
+      return;
+    }
+
+    if (!formData.email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      setError('Podaj prawidłowy adres email');
       setIsSubmitting(false);
       return;
     }
 
     if (!formData.phone.trim()) {
-      setError('Telefon jest wymagany');
+      setError('Numer telefonu jest wymagany');
+      setIsSubmitting(false);
+      return;
+    }
+
+    if (!validatePhone(formData.phone)) {
+      setError('Podaj prawidłowy polski numer telefonu (np. 123 456 789 lub +48 123 456 789)');
       setIsSubmitting(false);
       return;
     }
@@ -55,15 +101,25 @@ export default function CaseStudyLeadMagnet() {
     }
 
     try {
+      // Prepare phone number for API (ensure it has +48 prefix)
+      let phoneForApi = formData.phone.replace(/[\s\-]/g, '');
+      if (!phoneForApi.startsWith('+48')) {
+        phoneForApi = '+48' + phoneForApi;
+      }
+
       const response = await fetch('/api/leads', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          ...formData,
-          message: 'Proszę o przesłanie case study dotyczącego zwiększenia liczby leadów o 6x w 90 dni.',
-          source: 'case-study-lead-magnet'
+          firstName: formData.firstName.trim(),
+          company: formData.company.trim(),
+          email: formData.email.trim().toLowerCase(),
+          phone: phoneForApi,
+          message: 'Proszę o przesłanie case study: Jak firma IT zwiększyła liczbę leadów z 20 do 120/miesiąc w 90 dni. Interesują mnie konkretne strategie, narzędzia i proces implementacji.',
+          source: 'case-study-lead-magnet',
+          consent: formData.consent
         }),
       });
 
@@ -76,11 +132,18 @@ export default function CaseStudyLeadMagnet() {
           setIsModalOpen(false);
           setIsSubmitted(false);
           setFormData({ firstName: '', company: '', email: '', phone: '', consent: false });
-        }, 3000);
+        }, 5000);
       } else {
-        setError(result.message || 'Wystąpił błąd podczas wysyłania formularza');
+        // Handle specific validation errors
+        if (result.errors) {
+          const errorMessages = Object.values(result.errors).flat();
+          setError(errorMessages.join(', '));
+        } else {
+          setError(result.message || 'Wystąpił błąd podczas wysyłania formularza');
+        }
       }
     } catch (error) {
+      console.error('Case study form error:', error);
       setError('Wystąpił błąd podczas wysyłania formularza. Spróbuj ponownie.');
     } finally {
       setIsSubmitting(false);
@@ -89,11 +152,13 @@ export default function CaseStudyLeadMagnet() {
 
   const openModal = () => {
     setIsModalOpen(true);
+    setError(''); // Clear any previous errors
   };
 
   const closeModal = () => {
     setIsModalOpen(false);
     setIsSubmitted(false);
+    setError('');
     setFormData({ email: '', phone: '', firstName: '', company: '', consent: false });
   };
 
@@ -192,7 +257,7 @@ export default function CaseStudyLeadMagnet() {
                   Case study zostało wysłane na Twój email.
                 </p>
                 <p className="text-sm text-gray-500">
-                  Sprawdź także spam/promotional folder.
+                  Sprawdź także folder spam/promocje.
                 </p>
               </div>
             ) : (
@@ -257,13 +322,16 @@ export default function CaseStudyLeadMagnet() {
                     <input
                       type="tel"
                       name="phone"
-                      placeholder="Numer telefonu"
+                      placeholder="Numer telefonu (np. 123 456 789)"
                       value={formData.phone}
                       onChange={handleInputChange}
                       required
                       disabled={isSubmitting}
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                     />
+                    <p className="text-xs text-gray-500 mt-1">
+                      Format: 123 456 789 lub +48 123 456 789
+                    </p>
                   </div>
 
                   <div className="flex items-start">

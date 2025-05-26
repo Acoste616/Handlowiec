@@ -55,15 +55,25 @@ export function validateNIP(nip: string): boolean {
  * Extract UTM parameters from URL
  */
 export function extractUTMParams(url: string): Record<string, string> {
-  const urlObj = new URL(url);
   const params: Record<string, string> = {};
   
-  ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term'].forEach(param => {
-    const value = urlObj.searchParams.get(param);
-    if (value) {
-      params[param] = value;
-    }
-  });
+  if (!url) {
+    return params;
+  }
+  
+  try {
+    const urlObj = new URL(url);
+    
+    ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term'].forEach(param => {
+      const value = urlObj.searchParams.get(param);
+      if (value) {
+        params[param] = value;
+      }
+    });
+  } catch (error) {
+    // Invalid URL, return empty params
+    console.warn('Invalid URL for UTM extraction:', url);
+  }
   
   return params;
 }

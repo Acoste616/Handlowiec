@@ -83,7 +83,7 @@ export default function StickyNavigation() {
               Panel Klienta
             </Link>
             <Link 
-              href="/admin/login"
+              href="/agent"
               className="text-gray-600 hover:text-gray-700 px-3 py-2 text-sm font-medium transition-colors"
             >
               Panel Handlowca

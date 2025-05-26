@@ -17,32 +17,49 @@ export default function HomePage() {
       {/* Sticky Navigation */}
       <StickyNavigation />
 
-      {/* Hero Section - Ból #1: Rotacja */}
-      <NewHero />
+      {/* Main content with semantic structure */}
+      <main role="main">
+        {/* Hero Section - Ból #1: Rotacja */}
+        <section aria-labelledby="hero-heading">
+          <NewHero />
+        </section>
 
-      {/* Pain Sections - Bóle #2-#6 */}
-      <PainSections />
+        {/* Pain Sections - Bóle #2-#6 */}
+        <section aria-labelledby="pain-points-heading">
+          <PainSections />
+        </section>
 
-      {/* Social Proof Carousel */}
-      <SocialProofCarousel />
+        {/* Social Proof Carousel */}
+        <section aria-labelledby="testimonials-heading">
+          <SocialProofCarousel />
+        </section>
 
-      {/* Interactive Cost Calculator */}
-      <CostCalculator />
+        {/* Interactive Cost Calculator */}
+        <section aria-labelledby="calculator-heading">
+          <CostCalculator />
+        </section>
 
-      {/* FAQ / Obiekcje */}
-      <NewFAQ />
+        {/* FAQ / Obiekcje */}
+        <section aria-labelledby="faq-heading">
+          <NewFAQ />
+        </section>
 
-      {/* Case Study Lead Magnet */}
-      <CaseStudyLeadMagnet />
+        {/* Case Study Lead Magnet */}
+        <section aria-labelledby="case-study-heading">
+          <CaseStudyLeadMagnet />
+        </section>
 
-      {/* Final CTA */}
-      <FinalCTA />
+        {/* Final CTA */}
+        <section aria-labelledby="cta-heading">
+          <FinalCTA />
+        </section>
+      </main>
 
       {/* Footer */}
       <Footer />
 
       {/* Debug Info - only in development */}
-      <DebugInfo />
+      {process.env.NODE_ENV === 'development' && <DebugInfo />}
     </>
   );
 } 
