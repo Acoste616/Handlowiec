@@ -16,10 +16,10 @@ interface TeamMember {
 
 export default function ClientContactPage() {
   const { user } = useClientAuth();
-  const [selectedMember, setSelectedMember] = useState<TeamMember | null>(null);
+  const [selectedTeamMember, setSelectedTeamMember] = useState<TeamMember | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [message, setMessage] = useState('');
   const [subject, setSubject] = useState('');
-  const [showMessageModal, setShowMessageModal] = useState(false);
 
   const teamMembers: TeamMember[] = [
     {
@@ -73,7 +73,7 @@ export default function ClientContactPage() {
   };
 
   const handleSendMessage = async () => {
-    if (!selectedMember || !subject || !message) return;
+    if (!selectedTeamMember || !subject || !message) return;
 
     try {
       // Symulacja wysłania wiadomości
@@ -82,8 +82,8 @@ export default function ClientContactPage() {
       // Reset form
       setMessage('');
       setSubject('');
-      setShowMessageModal(false);
-      setSelectedMember(null);
+      setIsModalOpen(false);
+      setSelectedTeamMember(null);
       
       alert('Wiadomość została wysłana!');
     } catch (error) {
@@ -93,7 +93,7 @@ export default function ClientContactPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="h-full">
       {/* Header */}
       <div className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -205,8 +205,8 @@ export default function ClientContactPage() {
                     </a>
                     <button
                       onClick={() => {
-                        setSelectedMember(member);
-                        setShowMessageModal(true);
+                        setSelectedTeamMember(member);
+                        setIsModalOpen(true);
                       }}
                       className="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 text-sm"
                     >
@@ -253,11 +253,11 @@ export default function ClientContactPage() {
         </div>
 
         {/* Message Modal */}
-        {showMessageModal && selectedMember && (
+        {isModalOpen && selectedTeamMember && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white rounded-lg p-6 w-full max-w-md">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                Wiadomość do {selectedMember.name}
+                Wiadomość do {selectedTeamMember.name}
               </h3>
               
               <div className="space-y-4">
@@ -287,8 +287,8 @@ export default function ClientContactPage() {
               <div className="flex justify-end space-x-3 mt-6">
                 <button
                   onClick={() => {
-                    setShowMessageModal(false);
-                    setSelectedMember(null);
+                    setIsModalOpen(false);
+                    setSelectedTeamMember(null);
                     setMessage('');
                     setSubject('');
                   }}

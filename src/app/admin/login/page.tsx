@@ -12,26 +12,45 @@ export default function LoginPage() {
   const { user, login, loading } = useAuth();
   const router = useRouter();
 
+  // Test function
+  const testFunction = () => {
+    console.log('🧪 Test function called!');
+    alert('Test function works!');
+  };
+
   // Przekieruj jeśli już zalogowany
   useEffect(() => {
+    console.log('👤 Current user:', user);
+    console.log('⏳ Loading state:', loading);
     if (!loading && user) {
+      console.log('🔄 Redirecting to dashboard...');
       router.push('/admin/dashboard');
     }
   }, [user, loading, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log('📝 Form submitted!');
+    console.log('📧 Email:', email);
+    console.log('🔒 Password length:', password.length);
+    
     setError('');
     setIsLoading(true);
 
     try {
+      console.log('🔄 Calling login function...');
       const success = await login(email, password);
+      console.log('📊 Login result:', success);
+      
       if (success) {
+        console.log('✅ Login successful, redirecting...');
         router.push('/admin/dashboard');
       } else {
+        console.log('❌ Login failed');
         setError('Nieprawidłowy email lub hasło');
       }
     } catch (error) {
+      console.error('💥 Login error:', error);
       setError('Wystąpił błąd podczas logowania');
     } finally {
       setIsLoading(false);
@@ -77,7 +96,10 @@ export default function LoginPage() {
                 autoComplete="email"
                 required
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => {
+                  console.log('📧 Email changed:', e.target.value);
+                  setEmail(e.target.value);
+                }}
                 className="relative block w-full px-3 py-2 border border-gray-300 rounded-t-md placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-primary-500 focus:border-primary-500 focus:z-10 sm:text-sm"
                 placeholder="Email"
                 disabled={isLoading}
@@ -94,7 +116,10 @@ export default function LoginPage() {
                 autoComplete="current-password"
                 required
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e) => {
+                  console.log('🔒 Password changed, length:', e.target.value.length);
+                  setPassword(e.target.value);
+                }}
                 className="relative block w-full px-3 py-2 border border-gray-300 rounded-b-md placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-primary-500 focus:border-primary-500 focus:z-10 sm:text-sm"
                 placeholder="Hasło"
                 disabled={isLoading}
@@ -123,6 +148,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={isLoading}
+              onClick={() => console.log('🖱️ Button clicked!')}
               className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isLoading ? (
@@ -133,6 +159,17 @@ export default function LoginPage() {
               ) : (
                 'Zaloguj się'
               )}
+            </button>
+          </div>
+          
+          {/* Test button */}
+          <div className="mt-4">
+            <button
+              type="button"
+              onClick={testFunction}
+              className="w-full bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700"
+            >
+              🧪 Test Button (Click Me!)
             </button>
           </div>
 

@@ -67,9 +67,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const login = async (email: string, password: string): Promise<boolean> => {
+    console.log('🔐 useAuth.login called with:', email);
+    console.log('🔑 Available credentials:', validCredentials.map(c => c.email));
+    
     const credential = validCredentials.find(cred => 
       cred.email === email && cred.password === password
     );
+
+    console.log('🔍 Found credential:', !!credential);
+    console.log('📋 Credential details:', credential ? { email: credential.email, name: credential.name, role: credential.role } : 'None');
 
     if (credential) {
       const user: User = {
@@ -84,11 +90,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         expiry: Date.now() + (24 * 60 * 60 * 1000) // 24 godziny
       };
 
+      console.log('💾 Saving to localStorage:', authData);
       localStorage.setItem('bezhandlowca_auth', JSON.stringify(authData));
       setUser(user);
+      console.log('✅ User set successfully');
       return true;
     }
 
+    console.log('❌ No matching credential found');
     return false;
   };
 

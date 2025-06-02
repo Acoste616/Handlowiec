@@ -3,6 +3,11 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 export async function middleware(req: NextRequest) {
+  // TEMPORARY: Skip all middleware for testing with local auth
+  // This allows using local test credentials without Supabase
+  console.log('🚫 Middleware disabled for local testing');
+  return NextResponse.next();
+
   // Skip middleware during build time
   if (process.env.NODE_ENV === 'development' && !process.env.NEXT_PUBLIC_SUPABASE_URL) {
     return NextResponse.next();
